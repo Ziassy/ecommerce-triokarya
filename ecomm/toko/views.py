@@ -44,6 +44,11 @@ class ProductList(generic.ListView):
         context['categories'] = categories.values()
         context['selected_categories'] = selected_categories_values
         context['object_list'] = sorted_products
+        
+        if 'carousel' in self.request.path:
+            context['show_search_icon'] = True
+        else:
+            context['show_search_icon'] = False
 
         return context
 
