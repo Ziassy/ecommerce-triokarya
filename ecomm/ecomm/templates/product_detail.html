@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content%}
+
+<!--Main layout-->
+    <!-- Open Content -->
+    <section class="bg-light">
+        <div class="container pb-5">
+            <div class="row">
+                <div class="col-lg-5 mt-5">
+                    <div class="card mb-3">
+                        <img class="card-img img-fluid" src="{{ object.gambar.url }}" alt="Card image cap"
+                            id="product-detail">
+                    </div>
+                </div>
+                <!-- col end -->
+                <div class="col-lg-7 mt-5">
+                    <div class="card">
+                        <div class="card-body">
+                            <h1 class="h2">{{ object.nama_produk }}</h1>
+                            <p class="h3 py-2">
+                                {% if object.harga_diskon %}
+                                <span class="text-danger"><del>${{ object.harga }}</del></span>
+                                <span><b>${{ object.harga_diskon }}</b></span>
+                                {% else %}
+                                <span>${{ object.harga }}</span>
+                                {% endif %}
+                            </p>
+                            <p class="py-2">
+                                <i class="fa fa-star text-warning"></i>
+                                <i class="fa fa-star text-warning"></i>
+                                <i class="fa fa-star text-warning"></i>
+                                <i class="fa fa-star text-warning"></i>
+                                <i class="fa fa-star text-secondary"></i>
+                                <span class="list-inline-item text-dark">Rating 4.8 | 36 Comments</span>
+                            </p>
+                            <ul class="list-inline">
+                                <li class="list-inline-item">
+                                    <h6>Category:</h6>
+                                </li>
+                                <li class="list-inline-item">
+                                    <p class="text-muted"><strong>{{ object.get_kategori_display }}</strong></p>
+                                </li>
+                            </ul>
+
+                            <h6>Description:</h6>
+                            <p>{{ object.deskripsi }}</p>
+                            <ul class="list-inline">
+                                <li class="list-inline-item">
+                                    <h6>Label</h6>
+                                </li>
+                                {% if object.label == 'NEW' %}
+                                <li class="list-inline-item">
+                                    <p class="text-muted"><strong>New</strong></p>
+                                </li>
+                                {% elif object.label == 'SALE' %}
+                                <li class="list-inline-item">
+                                    <p class="text-muted"><strong>Sale</strong></p>
+                                </li>
+                                {% else %}
+                               <li class="list-inline-item">
+                                    <p class="text-muted"><strong>Best Seller</strong></p>
+                                </li>
+                                {% endif %}
+
+                            </ul>
+
+                            <form action="" method="GET">
+                            {% csrf_token %}
+                                <input type="hidden" name="product-title" value="Activewear">
+                                <div class="row pb-3">
+                                    <div class="col d-grid">
+                                         <a href="{{ object.get_add_to_cart_url }}" class="btn btn-success py-2">
+                                            + Add to cart
+                                        </a>
+                                    </div>
+                                    <div class="col d-grid">
+                                         <a href="{{ object.get_remove_from_cart_url }}" class="btn btn-danger py-2">
+                                            + Remove from cart
+                                        </a>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Close Content -->
+<!--Main layout-->
+{% endblock content%}

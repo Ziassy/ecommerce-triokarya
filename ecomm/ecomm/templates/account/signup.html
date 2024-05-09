@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+  <link rel="stylesheet" href="{% static '/css/style.css' %}">
+  <link href="{% static '/assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static '/assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+  <!-- partial:index.partial.html -->
+  <div class="logo text-center">
+
+    <h1>Sign Up</h1>
+  </div>
+  <div class="wrapper">
+    <div class="inner-warpper text-center">
+      <h3 class="title">Please fill in this form to create your account</h3>
+      {% for message in messages %}
+  
+      <div class="alert alert-{{message.tags}} alert-dismissible fade show " role="alert" style="color: red;"> 
+        <b>{{message}}</b>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
+
+      <form id="signup_form" method="post" action="/auth/signup/">
+        {% csrf_token %}
+
+        <div class="input-group">
+          <label class="palceholder" for="username">User Name</label>
+          <input class="form-control" name="username" id="username" type="text" placeholder="" required/>
+          <span class="lighting"></span>
+        </div>
+        <div class="input-group">
+          <label class="palceholder" for="email">Email</label>
+          <input class="form-control" name="email" id="email" type="email" placeholder="" required />
+          <span class="lighting"></span>
+        </div>
+        <div class="input-group">
+          <label class="palceholder" for="pass1">Password</label>
+          <input class="form-control" name="pass1" id="upass1erPassword" type="password" placeholder="" required />
+          <span class="lighting"></span> 
+        </div>
+        <div class="input-group">
+          <label class="palceholder" for="pass2">Confirm Password</label>
+          <input class="form-control" name="pass2" id="pass2" type="password" placeholder="" required />
+          <span class="lighting"></span> 
+        </div>
+
+        <button type="submit" id="signup">Sign Up</button>
+        <div class="clearfix supporter">
+          <a class="forgot pull-right" href="#">Forgot Password?</a>
+        </div>
+      </form>
+    </div>
+    <div class="signup-wrapper text-center">
+      <a href="/auth/login/">Already Registered? <span class="text-primary">Login</span></a>
+    </div>
+  </div>
+
+  <script src='https://code.jquery.com/jquery-2.2.4.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.15.0/jquery.validate.min.js'></script>
+  <script src="{% static '/js/script.js' %}"></script>
+  <script src="{% static '/assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+</body>
+
+</html>
