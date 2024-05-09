@@ -18,8 +18,13 @@ from .models import ProdukItem, OrderProdukItem, Order, AlamatPengiriman, Paymen
 class ProductList(generic.ListView):
     template_name = 'carousel.html'
     queryset = ProdukItem.objects.all()
-    # paginate_by = 4
     
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        keyword = self.request.GET.get('keyword')
+        if keyword:
+            queryset = queryset.filter(nama_produk__icontains=keyword)
+        return queryset
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -28,10 +33,10 @@ class ProductList(generic.ListView):
             'SW': 'Sportswear',
             'OW': 'Outerwear',
             'C': 'Cosmetic'
-        }  # Dictionary mapping category codes to their corresponding names
-        selected_categories_values = self.request.GET.getlist('category')  # Get selected categories from the request
+        }  
+        selected_categories_values = self.request.GET.getlist('category')  
         selected_categories_keys = [category for category, name in categories.items() if name in selected_categories_values]
-        sorted_products = self.queryset
+        sorted_products = self.get_queryset()  # Use filtered queryset to get keyword search & filter
 
         if selected_categories_keys:
             sorted_products = sorted_products.filter(kategori__in=selected_categories_keys)
