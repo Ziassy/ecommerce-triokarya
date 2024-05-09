@@ -47,6 +47,7 @@ class ProductList(generic.ListView):
         
         if 'carousel' in self.request.path:
             context['show_search_icon'] = True
+            context['keyword'] = self.request.GET.get('keyword', '')  # Pass keyword to the context
         else:
             context['show_search_icon'] = False
 

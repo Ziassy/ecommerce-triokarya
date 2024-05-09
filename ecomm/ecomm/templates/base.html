@@ -80,6 +80,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Modal for search -->
                     <form class="modal fade" id="templatemo_search" action="{% url 'toko:product_search' %}" method="GET">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -88,7 +89,7 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <input type="text" name="keyword" class="form-control" placeholder="Search...">
+                                    <input type="text" name="keyword" class="form-control" placeholder="Search..." value="{{ keyword}}">
                                 </div>
                                 <div class="modal-footer">
                                     <button type="submit" class="btn btn-success">Search</button>
@@ -96,6 +97,7 @@
                             </div>
                         </div>
                     </form>
+                    <!-- End Modal for search -->
                     {% if show_search_icon %}
                     <a class="nav-icon d-none d-lg-inline" href="#" data-bs-toggle="modal"
                         data-bs-target="#templatemo_search">

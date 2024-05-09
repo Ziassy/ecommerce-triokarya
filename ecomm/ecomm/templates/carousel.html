@@ -33,37 +33,46 @@
 
             <div class="col-lg-9">
                 <div class="row">
-                    {% for pItem in object_list %}
-                    <div class="col-md-4">
-                        <div class="card mb-4 product-wap rounded-0">
-                            <div class="card rounded-0">
-                                <img class="card-img rounded-0 img-fluid" src="{{ pItem.gambar.url }}" style="height: 300px;">
-                                <div
-                                    class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
-                                    <ul class="list-unstyled">
-                                        <li><a class="btn btn-success text-white mt-2" href="{{ pItem.get_absolute_url }}"><i
-                                                    class="fa fa-eye"></i></a></li>
+                    {% if object_list %}
+                        {% for pItem in object_list %}
+                        <div class="col-md-4">
+                            <div class="card mb-4 product-wap rounded-0">
+                                <div class="card rounded-0">
+                                    <img class="card-img rounded-0 img-fluid" src="{{ pItem.gambar.url }}" style="height: 300px;">
+                                    <div class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
+                                        <ul class="list-unstyled">
+                                            <li><a class="btn btn-success text-white mt-2" href="{{ pItem.get_absolute_url }}"><i class="fa fa-eye"></i></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-body">
+                                    <a href="{{ pItem.get_absolute_url }}" class="h3 text-decoration-none"><b>{{ pItem.nama_produk }}</b></a>
+                                    <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
+                                        <li>Category : {{ pItem.get_kategori_display }}</li>
                                     </ul>
+
+                                    <p class="text-center mb-0">
+                                        {% if pItem.harga_diskon %}
+                                        <span class="text-danger"><del>${{ pItem.harga }}</del></span>
+                                        <span><b>${{ pItem.harga_diskon }}</b></span>
+                                        {% else %}
+                                        <span>${{ pItem.harga }}</span>
+                                        {% endif %}
+                                    </p>
                                 </div>
                             </div>
-                            
-                            <div class="card-body">
-                                <a href="{{ pItem.get_absolute_url }}" class="h3 text-decoration-none"><b>{{ pItem.nama_produk }}</b></a>
-                                <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
-                                    <li>Category : {{ pItem.get_kategori_display }}</li>
-                                </ul>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-md-12">
+                            <div class="text-center">
+                                <img src="{% static 'img/product-notfound.png' %}" alt="Icon product not found">
+                                <p><b>No products found.</b></p>
 
-                                <p class="text-center mb-0">
-                                    {% if pItem.harga_diskon %}
-                                    <span class="text-danger"><del>${{ pItem.harga }}</del></span>
-                                    <span><b>${{ pItem.harga_diskon }}</b></span>
-                                    {% else %}
-                                    <span>${{ pItem.harga }}</span>
-                                    {% endif %}</p>
                             </div>
                         </div>
-                    </div>
-                    {% endfor %}
+                    {% endif %}
                 </div>
                 <!-- Pagination -->
                 <!-- <div div="row">
