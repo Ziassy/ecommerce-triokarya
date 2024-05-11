@@ -11,8 +11,10 @@ from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import permission_required
+from django.db.models import Avg
 
-from .forms import CheckoutForm, ContactForm
+
+from .forms import CheckoutForm, ContactForm,ReviewForm
 from .models import ProdukItem, OrderProdukItem, Order, AlamatPengiriman, Payment, Contact, PILIHAN_KATEGORI
 
 class ProductList(generic.ListView):
@@ -65,9 +67,44 @@ class ProductDetailView(generic.DetailView):
     template_name = 'product_detail.html'
     queryset = ProdukItem.objects.all()
     
-    def dispatch(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        return super().dispatch(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        produk = self.get_object()
+        reviews = produk.reviews.all()
+        
+        # Calculate average rating and round it to one decimal place
+        average_rating = reviews.aggregate(Avg('rating'))['rating__avg']
+        average_rating = round(average_rating, 1) if average_rating else 0
+        
+        total_reviews = reviews.count()
+        
+        context['reviews'] = reviews
+        context['average_rating'] = average_rating
+        context['total_reviews'] = total_reviews
+        context['has_purchased'] = has_purchased_product(self.request.user, produk)
+        return context
+
+def has_purchased_product(user, product):
+    return OrderProdukItem.objects.filter(user=user, produk_item=product, ordered=True).exists()
+    
+def add_review(request, slug):
+    produk = get_object_or_404(ProdukItem, slug=slug)
+    if has_purchased_product(request.user, produk):
+        if request.method == 'POST':
+            form = ReviewForm(request.POST)
+            if form.is_valid():
+                review = form.save(commit=False)
+                review.produk = produk
+                review.user = request.user
+                review.save()
+                messages.success(request, 'Review telah ditambahkan!')
+                return redirect('toko:produk-detail', slug=slug)
+        else:
+            form = ReviewForm()
+        return render(request, 'add_review.html', {'form': form, 'produk': produk})
+    else:
+        messages.error(request, 'Anda harus membeli produk ini untuk memberikan review.')
+        return redirect('toko:produk-detail', slug=slug)
     
 class ContactPageView(generic.FormView):
     template_name = 'contact.html'

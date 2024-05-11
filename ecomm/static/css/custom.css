@@ -1,3 +1,26 @@
 /*
 Custom Css
 */
+.rating {
+  display: flex;
+  justify-content: center;
+}
+
+.rating input[type="radio"] {
+  display: none;
+}
+
+.rating label {
+  cursor: pointer;
+  margin-right: 10px;
+
+}
+
+.rating label i {
+  color: #ccc;
+  font-size: 36px;
+}
+
+.rating input[type="radio"]:checked+label i {
+  color: #ffc107 !important;
+}

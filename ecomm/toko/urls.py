@@ -8,6 +8,7 @@ urlpatterns = [
      path('carousel/', views.ProductList.as_view(), name='produk-list'),
      path('carousel/search/', views.ProductList.as_view(), name='product_search'),
      path('product/<slug>/', views.ProductDetailView.as_view(), name='produk-detail'),
+     path('product/<slug:slug>/review/', views.add_review, name='add_review'),
      path('contact', views.ContactPageView.as_view(), name='contact'),
      path('contact/success/', views.contact_success, name='contact_success'),
      path('about/', views.about_view, name='about'),
