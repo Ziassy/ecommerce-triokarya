@@ -129,7 +129,16 @@
                         <div class="card mb-3">
                             <div class="card-body">
                                 <h5 class="card-title">{{ review.user.username }}</h5>
-                                <p class="card-text">Rating: {{ review.rating }}</p>
+                                <p class="card-text">
+                                    {% for _ in ''|center:5 %}
+                                        {% if forloop.counter0 < review.rating|default:"0"|add:"0" %}
+                                            <i class="fa fa-star text-warning"></i>
+                                        {% else %}
+                                            <i class="fa fa-star text-secondary"></i>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                </p>
                                 <p class="card-text">{{ review.review_text }}</p>
                                 <p class="card-text">
                                     <small class="text-muted">
