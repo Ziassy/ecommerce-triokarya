@@ -111,11 +111,18 @@
                         <span
                             class="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark">{{ request.user|total_produk_dikeranjang }}</span>
                     </a>
-                    <a class="nav-icon position-relative text-decoration-none" href="{% url 'account_logout' %}">
-                        <i class="fa fa-fw fa-user text-dark mr-3"></i>
-                        <span
-                            class="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark"></span>
-                    </a>
+                    <div class="dropdown">
+                        <a class="nav-icon position-relative text-decoration-none dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-fw fa-user text-dark mr-3"></i>
+                            <span class="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark"></span>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                            <a class="dropdown-item" href="{% url 'toko:profile' %}">Profile</a>
+                            <a class="dropdown-item" href="{% url 'toko:profile' %}">Address</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a>
+                        </div>
+                    </div>
                     {% else %}
                     <a class="nav-icon position-relative text-decoration-none" href="{% url 'handlelogin' %}">
                         <i class="fa fa-fw fa-user text-dark mr-3"></i>

@@ -12,10 +12,35 @@ from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import permission_required
 from django.db.models import Avg
+from django.contrib.auth.decorators import login_required
+from django.views import View
 
 
-from .forms import CheckoutForm, ContactForm,ReviewForm
-from .models import ProdukItem, OrderProdukItem, Order, AlamatPengiriman, Payment, Contact, PILIHAN_KATEGORI
+from .forms import CheckoutForm, ContactForm, ReviewForm, UserProfileForm
+from .models import ProdukItem, OrderProdukItem, Order, AlamatPengiriman, Payment, Contact, PILIHAN_KATEGORI, UserProfile
+
+class ProfileView(LoginRequiredMixin, View):
+    template_name = 'profile.html'
+    form_class = UserProfileForm
+
+    def get(self, request, *args, **kwargs):
+        try:
+            profile = request.user.userprofile
+        except UserProfile.DoesNotExist:
+            profile = UserProfile(user=request.user)
+        form = self.form_class(instance=profile)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        try:
+            profile = request.user.userprofile
+        except UserProfile.DoesNotExist:
+            profile = UserProfile(user=request.user)
+        form = self.form_class(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('toko:profile')
+        return render(request, self.template_name, {'form': form})
 
 class ProductList(generic.ListView):
     template_name = 'carousel.html'

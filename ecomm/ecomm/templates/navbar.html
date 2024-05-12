@@ -53,7 +53,7 @@
                     <i class="fas fa-shopping-cart"></i>
                     <span class="badge rounded-pill badge-notification bg-danger">{{ request.user|total_produk_dikeranjang }}</span>
                 </a>
-                <a class="nav-link me-3" href="{% url 'account_logout' %}">
+                <a class="nav-link me-3" href="{% url 'toko:profile' %}">
                     <i class="fas fa-right-from-bracket"></i>
                 </a>
             {% else %}

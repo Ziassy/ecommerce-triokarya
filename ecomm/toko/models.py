@@ -3,6 +3,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
+import datetime
+
 
 PILIHAN_KATEGORI = (
     ('S', 'Shirt'),
@@ -22,7 +24,22 @@ PILIHAN_PEMBAYARAN = (
     ('S', 'Stripe'),
 )
 
+JENIS_KELAMIN_CHOICES = [
+    ("L", 'Laki-laki'),
+    ("P", 'Perempuan'),
+]
 User = get_user_model()
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    nama = models.CharField(max_length=255)
+    phone_number = models.CharField(max_length=15)
+    jenis_kelamin = models.CharField(max_length=1, choices=JENIS_KELAMIN_CHOICES)
+    tanggal_lahir = models.DateField(default=datetime.date(1990, 1, 1))
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+
+    def __str__(self):
+        return self.nama
 
 class ProdukItem(models.Model):
     nama_produk = models.CharField(max_length=100)

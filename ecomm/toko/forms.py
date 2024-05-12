@@ -1,13 +1,17 @@
 from django import forms
 from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
-from .models import Contact, Review
+from .models import Contact, Review, UserProfile
 
 
 PILIHAN_PEMBAYARAN = (
     ('P', 'Paypal'),
     ('S', 'Stripe'),
 )
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['nama', 'phone_number', 'jenis_kelamin', 'tanggal_lahir', 'profile_picture']
 
 class CheckoutForm(forms.Form):
     alamat_1 = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Alamat Anda', 'class': 'textinput form-control'}))
