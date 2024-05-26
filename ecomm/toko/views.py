@@ -16,8 +16,8 @@ from django.contrib.auth.decorators import login_required
 from django.views import View
 
 
-from .forms import CheckoutForm, ContactForm, ReviewForm, UserProfileForm
-from .models import ProdukItem, OrderProdukItem, Order, AlamatPengiriman, Payment, Contact, PILIHAN_KATEGORI, UserProfile
+from .forms import CheckoutForm, ContactForm, ReviewForm, UserProfileForm, AddressForm
+from .models import ProdukItem, OrderProdukItem, Order, AlamatPengiriman, Payment, UserProfile, Address, Provinsi, Kabupaten, Kecamatan, Kelurahan
 
 class ProfileView(LoginRequiredMixin, View):
     template_name = 'profile.html'
@@ -359,3 +359,44 @@ def paypal_return(request):
 def paypal_cancel(request):
     messages.error(request, 'Pembayaran dibatalkan')
     return redirect('toko:order-summary')
+
+
+class AddressView(LoginRequiredMixin, View):
+    template_name = 'address_form.html'
+
+    def get(self, request, pk=None):
+        form = AddressForm()
+        provinsi_list = Provinsi.objects.all()
+        kabupaten_list = Kabupaten.objects.all()
+        kecamatan_list = Kecamatan.objects.all()
+        kelurahan_list = Kelurahan.objects.all()
+        return render(request, self.template_name, {
+            'form': form,
+            'provinsi_list': provinsi_list,
+            'kabupaten_list': kabupaten_list,
+            'kecamatan_list': kecamatan_list,
+            'kelurahan_list': kelurahan_list
+        })
+
+    def post(self, request, pk=None):
+        form = AddressForm(request.POST)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.user = request.user
+            address.save()
+            return redirect('toko:address_list')
+        return render(request, self.template_name, {'form': form})
+
+class AddressListView(LoginRequiredMixin, View):
+    template_name = 'address_list.html'
+
+    def get(self, request):
+        addresses = Address.objects.filter(user=request.user)
+        return render(request, self.template_name, {'addresses': addresses})
+
+class AddressDetailView(LoginRequiredMixin, View):
+    template_name = 'address_detail.html'
+
+    def get(self, request, pk):
+        address = get_object_or_404(Address, pk=pk, user=request.user)
+        return render(request, self.template_name, {'address': address})

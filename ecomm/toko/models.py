@@ -40,6 +40,49 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.nama
+    
+class Provinsi(models.Model):
+    id = models.CharField(primary_key=True, max_length=10)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class Kabupaten(models.Model):
+    id = models.CharField(primary_key=True, max_length=10)
+    id_provinsi = models.CharField(max_length=10)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class Kecamatan(models.Model):
+    id = models.CharField(primary_key=True, max_length=10)
+    id_kabupaten = models.CharField(max_length=10)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class Kelurahan(models.Model):
+    id = models.CharField(primary_key=True, max_length=10)
+    id_kecamatan = models.CharField(max_length=10)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class Address(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    provinsi = models.ForeignKey(Provinsi, on_delete=models.CASCADE)
+    kabupaten = models.ForeignKey(Kabupaten, on_delete=models.CASCADE)
+    kecamatan = models.ForeignKey(Kecamatan, on_delete=models.CASCADE)
+    kelurahan = models.ForeignKey(Kelurahan, on_delete=models.CASCADE)
+    detail = models.CharField(max_length=255)
+    is_primary = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.username}'s Address"
 
 class ProdukItem(models.Model):
     nama_produk = models.CharField(max_length=100)

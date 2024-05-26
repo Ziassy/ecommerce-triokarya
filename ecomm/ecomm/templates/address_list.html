@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load static %}
+    <div class="container mt-5">
+        <h2 class="text-center">My addresses</h2>
+        <a href="{% url 'toko:address_add' %}" class="btn btn-primary mb-3">Add Address</a>
+        <table class="table">
+        <thead>
+            <tr>
+            <th>Province</th>
+            <th>Regency</th>
+            <th>Subdistrict</th>
+            <th>Village</th>
+            <th>Address Detail</th>
+            <th></th>
+            <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if addresses %}
+            {% for address in addresses %}
+                <tr>
+                    <td>{{ address.provinsi.name }}</td>
+                    <td>{{ address.kabupaten.name }}</td>
+                    <td>{{ address.kecamatan.name }}</td>
+                    <td>{{ address.kelurahan.name }}</td>
+                    <td>{{ address.detail }}</td>
+                    <td>
+                        {% if address.is_primary %}
+                        <span class="badge bg-info text-dark">Default</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                    <a href="{% url 'toko:address_edit' address.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                    <a href="{% url 'toko:address_delete' address.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="7">No addresses added yet</td>
+                </tr>
+            {% endif %}
+        </tbody>
+        </table>
+    </div>
+
+{% endblock content %}
