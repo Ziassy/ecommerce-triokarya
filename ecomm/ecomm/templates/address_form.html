@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
 <div class="container rounded bg-white mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -56,7 +55,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label class="form-check-label">
-                                <input class="form-check-input" type="checkbox" {% if form.is_primary.value %}checked{% endif %} disabled> Is Primary
+                                <input class="form-check-input" type="checkbox" name="is_primary" {% if form.is_primary.value %}checked{% endif %}> Is Primary
                             </label>
                         </div>
                     </div>
@@ -68,6 +67,4 @@
         </div>
     </div>
 </div>
-
-
 {% endblock content %}

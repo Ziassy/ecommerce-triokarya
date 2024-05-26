@@ -22,8 +22,7 @@ urlpatterns = [
      path('paypal-return/', views.paypal_return, name='paypal-return'),
      path('paypal-cancel/', views.paypal_cancel, name='paypal-cancel'),
      path('address/', views.AddressListView.as_view(), name='address_list'),
-     path('address/<int:pk>/', views.AddressDetailView.as_view(), name='address_detail'),
      path('address/add/', views.AddressView.as_view(), name='address_add'),
      path('address/<int:pk>/edit/', views.AddressView.as_view(), name='address_edit'),
-     path('address/<int:pk>/delete/', views.AddressView.as_view(), name='address_delete'),
+     path('address/<int:pk>/delete/', views.AddressDeleteView.as_view(), name='address_delete'),
 ]

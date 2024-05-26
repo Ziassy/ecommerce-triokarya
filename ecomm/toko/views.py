@@ -365,11 +365,17 @@ class AddressView(LoginRequiredMixin, View):
     template_name = 'address_form.html'
 
     def get(self, request, pk=None):
-        form = AddressForm()
+        if pk:
+            address = get_object_or_404(Address, pk=pk, user=request.user)
+            form = AddressForm(instance=address)
+        else:
+            form = AddressForm()
+
         provinsi_list = Provinsi.objects.all()
         kabupaten_list = Kabupaten.objects.all()
         kecamatan_list = Kecamatan.objects.all()
         kelurahan_list = Kelurahan.objects.all()
+        
         return render(request, self.template_name, {
             'form': form,
             'provinsi_list': provinsi_list,
@@ -379,13 +385,34 @@ class AddressView(LoginRequiredMixin, View):
         })
 
     def post(self, request, pk=None):
-        form = AddressForm(request.POST)
+        if pk:
+            address = get_object_or_404(Address, pk=pk, user=request.user)
+            form = AddressForm(request.POST, instance=address)
+        else:
+            form = AddressForm(request.POST)
+
         if form.is_valid():
             address = form.save(commit=False)
             address.user = request.user
+
+            if address.is_primary:
+                Address.objects.filter(user=request.user, is_primary=True).update(is_primary=False)
+
             address.save()
             return redirect('toko:address_list')
-        return render(request, self.template_name, {'form': form})
+
+        provinsi_list = Provinsi.objects.all()
+        kabupaten_list = Kabupaten.objects.all()
+        kecamatan_list = Kecamatan.objects.all()
+        kelurahan_list = Kelurahan.objects.all()
+
+        return render(request, self.template_name, {
+            'form': form,
+            'provinsi_list': provinsi_list,
+            'kabupaten_list': kabupaten_list,
+            'kecamatan_list': kecamatan_list,
+            'kelurahan_list': kelurahan_list
+        })
 
 class AddressListView(LoginRequiredMixin, View):
     template_name = 'address_list.html'
@@ -393,10 +420,9 @@ class AddressListView(LoginRequiredMixin, View):
     def get(self, request):
         addresses = Address.objects.filter(user=request.user)
         return render(request, self.template_name, {'addresses': addresses})
-
-class AddressDetailView(LoginRequiredMixin, View):
-    template_name = 'address_detail.html'
-
-    def get(self, request, pk):
+    
+class AddressDeleteView(LoginRequiredMixin, View):
+    def post(self, request, pk):
         address = get_object_or_404(Address, pk=pk, user=request.user)
-        return render(request, self.template_name, {'address': address})
+        address.delete()
+        return redirect('toko:address_list')

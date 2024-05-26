@@ -34,8 +34,13 @@
                     </td>
 
                     <td>
-                    <a href="{% url 'toko:address_edit' address.pk %}" class="btn btn-sm btn-primary">Edit</a>
-                    <a href="{% url 'toko:address_delete' address.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                    <form action="{% url 'toko:address_edit' address.pk %}" method="get" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-primary">Edit</button>
+                    </form>
+                    <form action="{% url 'toko:address_delete' address.pk %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
                     </td>
                 </tr>
             {% endfor %}
