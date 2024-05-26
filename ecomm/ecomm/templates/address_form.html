@@ -6,7 +6,7 @@
         <div class="col-md-8">
             <div class="p-3 py-5">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="text-center">Add Address</h4>
+                    <h4 class="text-center">{% if form.instance.pk %}Edit{% else %}Add{% endif %} Address</h4>
                 </div>
                 <form method="post" class="needs-validation" novalidate>
                     {% csrf_token %}
@@ -14,16 +14,22 @@
                         <div class="col-md-6 mb-3">
                             <label class="labels" for="provinsi"><b>Provinsi</b></label>
                             <select class="form-control" id="provinsi" name="provinsi" required>
+                                {% if not form.instance.pk %}
+                                    <option value="" selected disabled>Select Provinsi</option>
+                                {% endif %}
                                 {% for provinsi in provinsi_list %}
-                                    <option value="{{ provinsi.id }}">{{ provinsi.name }}</option>
+                                    <option value="{{ provinsi.id }}" {% if form.instance.pk and provinsi.id == form.instance.provinsi.id %}selected{% endif %}>{{ provinsi.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="labels" for="kabupaten"><b>Kabupaten</b></label>
                             <select class="form-control" id="kabupaten" name="kabupaten" required>
+                                {% if not form.instance.pk %}
+                                    <option value="" selected disabled>Select Kabupaten</option>
+                                {% endif %}
                                 {% for kabupaten in kabupaten_list %}
-                                    <option value="{{ kabupaten.id }}">{{ kabupaten.name }}</option>
+                                    <option value="{{ kabupaten.id }}" {% if form.instance.pk and kabupaten.id == form.instance.kabupaten.id %}selected{% endif %}>{{ kabupaten.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -32,16 +38,22 @@
                         <div class="col-md-6 mb-3">
                             <label class="labels" for="kecamatan"><b>Kecamatan</b></label>
                             <select class="form-control" id="kecamatan" name="kecamatan" required>
+                                {% if not form.instance.pk %}
+                                    <option value="" selected disabled>Select Kecamatan</option>
+                                {% endif %}
                                 {% for kecamatan in kecamatan_list %}
-                                    <option value="{{ kecamatan.id }}">{{ kecamatan.name }}</option>
+                                    <option value="{{ kecamatan.id }}" {% if form.instance.pk and kecamatan.id == form.instance.kecamatan.id %}selected{% endif %}>{{ kecamatan.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="labels" for="kelurahan"><b>Kelurahan</b></label>
                             <select class="form-control" id="kelurahan" name="kelurahan" required>
+                                {% if not form.instance.pk %}
+                                    <option value="" selected disabled>Select Kelurahan</option>
+                                {% endif %}
                                 {% for kelurahan in kelurahan_list %}
-                                    <option value="{{ kelurahan.id }}">{{ kelurahan.name }}</option>
+                                    <option value="{{ kelurahan.id }}" {% if form.instance.pk and kelurahan.id == form.instance.kelurahan.id %}selected{% endif %}>{{ kelurahan.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
