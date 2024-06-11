@@ -1,7 +1,7 @@
 from django import forms
 from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
-from .models import Contact, Review, UserProfile, Address
+from .models import Contact, Review, UserProfile, Address, ProdukItem
 
 
 PILIHAN_PEMBAYARAN = (
@@ -37,3 +37,9 @@ class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
         fields = ['rating', 'review_text']
+        
+        
+class ProdukItemForm(forms.ModelForm):
+    class Meta:
+        model = ProdukItem
+        fields = ['nama_produk', 'harga', 'harga_diskon', 'slug', 'deskripsi', 'gambar', 'label', 'kategori', 'berat']

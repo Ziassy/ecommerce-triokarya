@@ -2,8 +2,7 @@ from django.contrib import admin
 from .models import ProdukItem, OrderProdukItem, Order, AlamatPengiriman, Payment
 
 class ProdukItemAdmin(admin.ModelAdmin):
-    list_display = ['nama_produk','harga', 'harga_diskon', 'slug',
-                    'deskripsi', 'gambar', 'label', 'kategori']
+    list_display = ['nama_produk', 'harga', 'harga_diskon', 'slug', 'deskripsi', 'gambar', 'label', 'kategori', 'berat']
 
 class OrderProdukItemAdmin(admin.ModelAdmin):
     list_display = ['user', 'ordered', 'produk_item', 'quantity']
