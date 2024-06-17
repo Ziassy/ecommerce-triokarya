@@ -21,13 +21,19 @@ PILIHAN_LABEL = (
 
 PILIHAN_PEMBAYARAN = (
     ('P', 'Paypal'),
-    ('S', 'Stripe'),
+    ('C', 'COD'),
 )
 
 JENIS_KELAMIN_CHOICES = [
     ("L", 'Laki-laki'),
     ("P", 'Perempuan'),
 ]
+
+PILIHAN_PENGIRIMAN = (
+    ('PR', 'Kurir Pribadi'),
+    ('EX', 'Kurir Eksternal'),
+)
+
 User = get_user_model()
 
 class UserProfile(models.Model):
@@ -160,6 +166,7 @@ class Order(models.Model):
     ordered = models.BooleanField(default=False)
     alamat_pengiriman = models.ForeignKey('AlamatPengiriman', on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey('Payment', on_delete=models.SET_NULL, blank=True, null=True)
+    delivery_method = models.CharField(max_length=2,choices=PILIHAN_PENGIRIMAN,default='PR')
 
     def __str__(self):
         return self.user.username

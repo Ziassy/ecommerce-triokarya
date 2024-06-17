@@ -207,9 +207,10 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
                 negara = form.cleaned_data.get('negara')
                 kode_pos = form.cleaned_data.get('kode_pos')
                 opsi_pembayaran = form.cleaned_data.get('opsi_pembayaran')
+                opsi_pengiriman = form.cleaned_data.get('opsi_pengiriman')
                 
                 # Validate opsi_pembayaran to prevent unauthorized payment method selection
-                allowed_payment_methods = ['P', 'S']  # Add the allowed payment method codes
+                allowed_payment_methods = ['P', 'C']  # Add the allowed payment method codes
                 
                 # Parameter Tampering Prevention
                 if opsi_pembayaran not in allowed_payment_methods:
@@ -225,14 +226,16 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
 
                 alamat_pengiriman.save()
                 order.alamat_pengiriman = alamat_pengiriman
+                order.delivery_method = opsi_pengiriman
                 order.save()
                 if opsi_pembayaran == 'P':
                     return redirect('toko:payment', payment_method='paypal')
                 else:
-                    return redirect('toko:payment', payment_method='stripe')
-
-            messages.warning(self.request, 'Gagal checkout')
-            return redirect('toko:checkout')
+                    return redirect('toko:payment', payment_method='COD')
+            else:
+                print(form.errors)  # Check errors in console for debugging
+                messages.warning(self.request, 'Gagal checkout')
+                return redirect('toko:checkout')
         except ObjectDoesNotExist:
             messages.error(self.request, 'Tidak ada pesanan yang aktif')
             return redirect('toko:order-summary')

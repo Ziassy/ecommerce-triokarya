@@ -1,13 +1,8 @@
 from django import forms
 from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
-from .models import Contact, Review, UserProfile, Address, ProdukItem
+from .models import Contact, Review, UserProfile, Address, ProdukItem, PILIHAN_PEMBAYARAN, PILIHAN_PENGIRIMAN
 
-
-PILIHAN_PEMBAYARAN = (
-    ('P', 'Paypal'),
-    ('S', 'Stripe'),
-)
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
@@ -24,6 +19,7 @@ class CheckoutForm(forms.Form):
     negara = CountryField(blank_label='(Pilih Negara)').formfield(widget=CountrySelectWidget(attrs={'class': 'countryselectwidget form-select'}))
     kode_pos = forms.CharField(widget=forms.TextInput(attrs={'class': 'textinput form-outline', 'placeholder': 'Kode Pos'}))
     simpan_info_alamat = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
+    opsi_pengiriman = forms.ChoiceField(widget=forms.RadioSelect(), choices=PILIHAN_PENGIRIMAN)
     opsi_pembayaran = forms.ChoiceField(widget=forms.RadioSelect(), choices=PILIHAN_PEMBAYARAN)
     
 
