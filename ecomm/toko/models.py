@@ -22,6 +22,7 @@ PILIHAN_LABEL = (
 PILIHAN_PEMBAYARAN = (
     ('P', 'Paypal'),
     ('C', 'COD'),
+    ('T', 'Transfer Manual (BCA)'),
 )
 
 JENIS_KELAMIN_CHOICES = [
@@ -180,11 +181,11 @@ class Order(models.Model):
             total += order_produk_item.get_total_item_keseluruan()
         return total
     
-    def get_total_hemat_order(self):
-        total = 0
+    def get_total_diskon_order(self):
+        total_diskon = 0
         for order_produk_item in self.produk_items.all():
-            total += order_produk_item.get_total_hemat_keseluruhan()
-        return total
+            total_diskon += order_produk_item.get_total_hemat_keseluruhan()
+        return total_diskon
 
 class AlamatPengiriman(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

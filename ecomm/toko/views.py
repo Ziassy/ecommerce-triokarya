@@ -41,6 +41,72 @@ class ProfileView(LoginRequiredMixin, View):
             form.save()
             return redirect('toko:profile')
         return render(request, self.template_name, {'form': form})
+    
+class AddressView(LoginRequiredMixin, View):
+    template_name = 'address_form.html'
+
+    def get(self, request, pk=None):
+        if pk:
+            address = get_object_or_404(Address, pk=pk, user=request.user)
+            form = AddressForm(instance=address)
+        else:
+            form = AddressForm()
+
+        provinsi_list = Provinsi.objects.all()
+        kabupaten_list = Kabupaten.objects.all()
+        kecamatan_list = Kecamatan.objects.all()
+        kelurahan_list = Kelurahan.objects.all()
+        
+        return render(request, self.template_name, {
+            'form': form,
+            'provinsi_list': provinsi_list,
+            'kabupaten_list': kabupaten_list,
+            'kecamatan_list': kecamatan_list,
+            'kelurahan_list': kelurahan_list
+        })
+
+    def post(self, request, pk=None):
+        if pk:
+            address = get_object_or_404(Address, pk=pk, user=request.user)
+            form = AddressForm(request.POST, instance=address)
+        else:
+            form = AddressForm(request.POST)
+
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.user = request.user
+
+            if address.is_primary:
+                Address.objects.filter(user=request.user, is_primary=True).update(is_primary=False)
+
+            address.save()
+            return redirect('toko:address_list')
+
+        provinsi_list = Provinsi.objects.all()
+        kabupaten_list = Kabupaten.objects.all()
+        kecamatan_list = Kecamatan.objects.all()
+        kelurahan_list = Kelurahan.objects.all()
+
+        return render(request, self.template_name, {
+            'form': form,
+            'provinsi_list': provinsi_list,
+            'kabupaten_list': kabupaten_list,
+            'kecamatan_list': kecamatan_list,
+            'kelurahan_list': kelurahan_list
+        })
+
+class AddressListView(LoginRequiredMixin, View):
+    template_name = 'address_list.html'
+
+    def get(self, request):
+        addresses = Address.objects.filter(user=request.user)
+        return render(request, self.template_name, {'addresses': addresses})
+    
+class AddressDeleteView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        address = get_object_or_404(Address, pk=pk, user=request.user)
+        address.delete()
+        return redirect('toko:address_list')
 
 class ProductList(generic.ListView):
     template_name = 'carousel.html'
@@ -150,134 +216,6 @@ def about_view(request):
 def empty_view_order_summary(request):
     return render(request, 'empty_order_summary.html')
 
-class PilihAlamatView(LoginRequiredMixin, generic.View):
-    def post(self, request, pk, *args, **kwargs):
-        address = get_object_or_404(Address, pk=pk, user=request.user)
-        # Mengambil ID dari alamat
-        request.session['selected_address'] = {
-            'address_id': address.pk,
-            'nama_penerima': address.nama_penerima,
-            'provinsi': address.provinsi.name,
-            'kabupaten': address.kabupaten.name,
-            'kecamatan': address.kecamatan.name,
-            'kelurahan': address.kelurahan.name,
-            'kode_pos': address.kode_pos,
-            'detail': address.detail
-        }
-        return redirect('toko:checkout')
-    
-    
-class CheckoutView(LoginRequiredMixin, generic.FormView):
-    def get(self, *args, **kwargs):
-        order = get_object_or_404(Order, user=self.request.user, ordered=False)
-
-        # Handle Insecure direct object reference
-        # Check if the order belongs to the current user
-        if order.user != self.request.user:
-            raise PermissionDenied('You are not authorized to access this order.')
-
-        form = CheckoutForm()
-        try:
-            order = Order.objects.get(user=self.request.user, ordered=False)
-            if order.produk_items.count() == 0:
-                messages.warning(self.request, 'Belum ada belanjaan yang Anda pesan, lanjutkan belanja')
-                return redirect('toko:home-produk-list')
-        except ObjectDoesNotExist:
-            order = {}
-            messages.warning(self.request, 'Belum ada belanjaan yang Anda pesan, lanjutkan belanja')
-            return redirect('toko:home-produk-list')
-
-        # Get the user's addresses
-        addresses = Address.objects.filter(user=self.request.user)
-        selected_address = self.request.session.get('selected_address', None)
-
-        context = {
-            'form': form,
-            'keranjang': order,
-            'addresses': addresses,
-            'selected_address': selected_address,
-        }
-        template_name = 'checkout.html'
-        return render(self.request, template_name, context)
-
-    def post(self, *args, **kwargs):
-        form = CheckoutForm(self.request.POST or None)
-        try:
-            order = Order.objects.get(user=self.request.user, ordered=False)
-            if form.is_valid():
-                opsi_pembayaran = form.cleaned_data.get('opsi_pembayaran')
-                opsi_pengiriman = form.cleaned_data.get('opsi_pengiriman')
-                
-                # Validate opsi_pembayaran to prevent unauthorized payment method selection
-                allowed_payment_methods = ['P', 'C']  # Add the allowed payment method codes
-                
-                # Parameter Tampering Prevention
-                if opsi_pembayaran not in allowed_payment_methods:
-                    raise PermissionDenied('Invalid payment method selected')
-                selected_address = self.request.session.get('selected_address', None)
-                if selected_address:
-                    alamat_pengiriman = AlamatPengiriman(
-                        user=self.request.user,
-                        detail_alamat=selected_address.get('detail'),
-                        provinsi=selected_address.get('provinsi'),
-                        kabupaten=selected_address.get('kabupaten'),
-                        kecamatan=selected_address.get('kecamatan'),
-                        kelurahan=selected_address.get('kelurahan'),
-                        kode_pos=selected_address.get('kode_pos'),
-                        nama_penerima=selected_address.get('nama_penerima')
-                    )
-                    alamat_pengiriman.save()
-                    order.alamat_pengiriman = alamat_pengiriman
-                    order.delivery_method = opsi_pengiriman
-                    order.save()
-                else:
-                    # Handle case when selected_address is None
-                    messages.warning(self.request, 'Alamat pengiriman belum dipilih')
-                    return redirect('toko:checkout')
-                
-                if opsi_pembayaran == 'P':
-                    return redirect('toko:payment', payment_method='paypal')
-                else:
-                    return redirect('toko:payment', payment_method='COD')
-            else:
-                print(form.errors)  # Check errors in console for debugging
-                messages.warning(self.request, 'Gagal checkout')
-                return redirect('toko:checkout')
-        except ObjectDoesNotExist:
-            messages.error(self.request, 'Tidak ada pesanan yang aktif')
-            return redirect('toko:order-summary')
-
-class PaymentView(LoginRequiredMixin, generic.FormView):
-    def get(self, *args, **kwargs):
-        template_name = 'payment.html'
-        try:
-            order = Order.objects.get(user=self.request.user, ordered=False)
-            
-            paypal_data = {
-                'business': settings.PAYPAL_RECEIVER_EMAIL,
-                'amount': order.get_total_harga_order,
-                'item_name': f'Pembayaran belajanan order: {order.id}',
-                'invoice': f'{order.id}-{timezone.now().timestamp()}' ,
-                'currency_code': 'USD',
-                'notify_url': self.request.build_absolute_uri(reverse('paypal-ipn')),
-                'return_url': self.request.build_absolute_uri(reverse('toko:paypal-return')),
-                'cancel_return': self.request.build_absolute_uri(reverse('toko:paypal-cancel')),
-            }
-        
-            qPath = self.request.get_full_path()
-            isPaypal = 'paypal' in qPath
-        
-            form = PayPalPaymentsForm(initial=paypal_data)
-            context = {
-                'paypalform': form,
-                'order': order,
-                'is_paypal': isPaypal,
-            }
-            return render(self.request, template_name, context)
-
-        except ObjectDoesNotExist:
-            return redirect('toko:checkout')
-
 class OrderSummaryView(LoginRequiredMixin, generic.TemplateView):
     def get(self, *args, **kwargs):
         try:
@@ -354,6 +292,138 @@ def remove_from_cart(request, slug):
     else:
         return redirect('/accounts/login')
 
+class PilihAlamatView(LoginRequiredMixin, generic.View):
+    def post(self, request, pk, *args, **kwargs):
+        address = get_object_or_404(Address, pk=pk, user=request.user)
+        # Mengambil ID dari alamat
+        request.session['selected_address'] = {
+            'address_id': address.pk,
+            'nama_penerima': address.nama_penerima,
+            'provinsi': address.provinsi.name,
+            'kabupaten': address.kabupaten.name,
+            'kecamatan': address.kecamatan.name,
+            'kelurahan': address.kelurahan.name,
+            'kode_pos': address.kode_pos,
+            'detail': address.detail
+        }
+        return redirect('toko:checkout')
+    
+    
+class CheckoutView(LoginRequiredMixin, generic.FormView):
+    def get(self, *args, **kwargs):
+        order = get_object_or_404(Order, user=self.request.user, ordered=False)
+
+        # Handle Insecure direct object reference
+        # Check if the order belongs to the current user
+        if order.user != self.request.user:
+            raise PermissionDenied('You are not authorized to access this order.')
+
+        form = CheckoutForm()
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            if order.produk_items.count() == 0:
+                messages.warning(self.request, 'Belum ada belanjaan yang Anda pesan, lanjutkan belanja')
+                return redirect('toko:home-produk-list')
+        except ObjectDoesNotExist:
+            order = {}
+            messages.warning(self.request, 'Belum ada belanjaan yang Anda pesan, lanjutkan belanja')
+            return redirect('toko:home-produk-list')
+
+        # Get the user's addresses
+        addresses = Address.objects.filter(user=self.request.user)
+        selected_address = self.request.session.get('selected_address', None)
+
+        context = {
+            'form': form,
+            'keranjang': order,
+            'addresses': addresses,
+            'selected_address': selected_address,
+        }
+        template_name = 'checkout.html'
+        return render(self.request, template_name, context)
+
+    def post(self, *args, **kwargs):
+        form = CheckoutForm(self.request.POST or None)
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            if form.is_valid():
+                opsi_pembayaran = form.cleaned_data.get('opsi_pembayaran')
+                opsi_pengiriman = form.cleaned_data.get('opsi_pengiriman')
+                
+                # Validate opsi_pembayaran to prevent unauthorized payment method selection
+                allowed_payment_methods = ['P', 'C', 'T']  # Add the allowed payment method codes
+                
+                # Parameter Tampering Prevention
+                if opsi_pembayaran not in allowed_payment_methods:
+                    raise PermissionDenied('Invalid payment method selected')
+                selected_address = self.request.session.get('selected_address', None)
+                if selected_address:
+                    alamat_pengiriman = AlamatPengiriman(
+                        user=self.request.user,
+                        detail_alamat=selected_address.get('detail'),
+                        provinsi=selected_address.get('provinsi'),
+                        kabupaten=selected_address.get('kabupaten'),
+                        kecamatan=selected_address.get('kecamatan'),
+                        kelurahan=selected_address.get('kelurahan'),
+                        kode_pos=selected_address.get('kode_pos'),
+                        nama_penerima=selected_address.get('nama_penerima')
+                    )
+                    alamat_pengiriman.save()
+                    order.alamat_pengiriman = alamat_pengiriman
+                    order.delivery_method = opsi_pengiriman
+                    order.save()
+                else:
+                    # Handle case when selected_address is None
+                    messages.warning(self.request, 'Alamat pengiriman belum dipilih')
+                    return redirect('toko:checkout')
+                
+                if opsi_pembayaran == 'P':
+                    return redirect('toko:payment', payment_method='paypal')
+                elif opsi_pembayaran == 'T':
+                    return redirect('toko:payment', payment_method='manual')
+                else:
+                    return redirect('toko:payment', payment_method='COD')
+            else:
+                print(form.errors)  # Check errors in console for debugging
+                messages.warning(self.request, 'Gagal checkout')
+                return redirect('toko:checkout')
+        except ObjectDoesNotExist:
+            messages.error(self.request, 'Tidak ada pesanan yang aktif')
+            return redirect('toko:order-summary')
+
+class PaymentView(LoginRequiredMixin, generic.FormView):
+    def get(self, *args, **kwargs):
+        template_name = 'payment.html'
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            
+            paypal_data = {
+                'business': settings.PAYPAL_RECEIVER_EMAIL,
+                'amount': order.get_total_harga_order,
+                'item_name': f'Pembayaran belajanan order: {order.id}',
+                'invoice': f'{order.id}-{timezone.now().timestamp()}' ,
+                'currency_code': 'USD',
+                'notify_url': self.request.build_absolute_uri(reverse('paypal-ipn')),
+                'return_url': self.request.build_absolute_uri(reverse('toko:paypal-return')),
+                'cancel_return': self.request.build_absolute_uri(reverse('toko:paypal-cancel')),
+            }
+        
+            qPath = self.request.get_full_path()
+            isPaypal = 'paypal' in qPath
+        
+            form = PayPalPaymentsForm(initial=paypal_data)
+            context = {
+                'paypalform': form,
+                'order': order,
+                'is_paypal': isPaypal,
+            }
+            return render(self.request, template_name, context)
+
+        except ObjectDoesNotExist:
+            return redirect('toko:checkout')
+
+
+
 @csrf_exempt
 def paypal_return(request):
     if request.user.is_authenticated:
@@ -389,68 +459,3 @@ def paypal_cancel(request):
     return redirect('toko:order-summary')
 
 
-class AddressView(LoginRequiredMixin, View):
-    template_name = 'address_form.html'
-
-    def get(self, request, pk=None):
-        if pk:
-            address = get_object_or_404(Address, pk=pk, user=request.user)
-            form = AddressForm(instance=address)
-        else:
-            form = AddressForm()
-
-        provinsi_list = Provinsi.objects.all()
-        kabupaten_list = Kabupaten.objects.all()
-        kecamatan_list = Kecamatan.objects.all()
-        kelurahan_list = Kelurahan.objects.all()
-        
-        return render(request, self.template_name, {
-            'form': form,
-            'provinsi_list': provinsi_list,
-            'kabupaten_list': kabupaten_list,
-            'kecamatan_list': kecamatan_list,
-            'kelurahan_list': kelurahan_list
-        })
-
-    def post(self, request, pk=None):
-        if pk:
-            address = get_object_or_404(Address, pk=pk, user=request.user)
-            form = AddressForm(request.POST, instance=address)
-        else:
-            form = AddressForm(request.POST)
-
-        if form.is_valid():
-            address = form.save(commit=False)
-            address.user = request.user
-
-            if address.is_primary:
-                Address.objects.filter(user=request.user, is_primary=True).update(is_primary=False)
-
-            address.save()
-            return redirect('toko:address_list')
-
-        provinsi_list = Provinsi.objects.all()
-        kabupaten_list = Kabupaten.objects.all()
-        kecamatan_list = Kecamatan.objects.all()
-        kelurahan_list = Kelurahan.objects.all()
-
-        return render(request, self.template_name, {
-            'form': form,
-            'provinsi_list': provinsi_list,
-            'kabupaten_list': kabupaten_list,
-            'kecamatan_list': kecamatan_list,
-            'kelurahan_list': kelurahan_list
-        })
-
-class AddressListView(LoginRequiredMixin, View):
-    template_name = 'address_list.html'
-
-    def get(self, request):
-        addresses = Address.objects.filter(user=request.user)
-        return render(request, self.template_name, {'addresses': addresses})
-    
-class AddressDeleteView(LoginRequiredMixin, View):
-    def post(self, request, pk):
-        address = get_object_or_404(Address, pk=pk, user=request.user)
-        address.delete()
-        return redirect('toko:address_list')

@@ -143,6 +143,13 @@
                         </li>
                         {% endfor %}
 
+                        <!-- Total Diskon -->
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Total Diskon (USD)</span>
+                            <strong class="text-danger">-${{ keranjang.get_total_diskon_order }}</strong>
+                        </li>
+
+                        <!-- Total (USD) after applying discounts -->
                         <li class="list-group-item d-flex justify-content-between">
                             <span>Total (USD)</span>
                             <strong class="text-success">${{ keranjang.get_total_harga_order }}</strong>
