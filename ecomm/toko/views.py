@@ -149,6 +149,19 @@ def about_view(request):
 
 def empty_view_order_summary(request):
     return render(request, 'empty_order_summary.html')
+
+class PilihAlamatView(LoginRequiredMixin, generic.View):
+    def post(self, request, pk, *args, **kwargs):
+        address = get_object_or_404(Address, pk=pk, user=request.user)
+        # Simpan address yang dipilih di session
+        request.session['selected_address'] = {
+            'provinsi': address.provinsi.name,
+            'kabupaten': address.kabupaten.name,
+            'kecamatan': address.kecamatan.name,
+            'kelurahan': address.kelurahan.name,
+            'detail': address.detail
+        }
+        return redirect('toko:checkout')
     
     
 class CheckoutView(LoginRequiredMixin, generic.FormView):
@@ -159,22 +172,27 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
         # Check if the order belongs to the current user
         if order.user != self.request.user:
             raise PermissionDenied('You are not authorized to access this order.')
-        
-        
+
         form = CheckoutForm()
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
             if order.produk_items.count() == 0:
-                messages.warning(self.request, 'Belum ada belajaan yang Anda pesan, lanjutkan belanja')
+                messages.warning(self.request, 'Belum ada belanjaan yang Anda pesan, lanjutkan belanja')
                 return redirect('toko:home-produk-list')
         except ObjectDoesNotExist:
             order = {}
-            messages.warning(self.request, 'Belum ada belajaan yang Anda pesan, lanjutkan belanja')
+            messages.warning(self.request, 'Belum ada belanjaan yang Anda pesan, lanjutkan belanja')
             return redirect('toko:home-produk-list')
+
+        # Get the user's addresses
+        addresses = Address.objects.filter(user=self.request.user)
+        selected_address = self.request.session.get('selected_address', None)
 
         context = {
             'form': form,
             'keranjang': order,
+            'addresses': addresses,
+            'selected_address': selected_address,
         }
         template_name = 'checkout.html'
         return render(self.request, template_name, context)
@@ -190,7 +208,7 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
                 kode_pos = form.cleaned_data.get('kode_pos')
                 opsi_pembayaran = form.cleaned_data.get('opsi_pembayaran')
                 
-                 # Validate opsi_pembayaran to prevent unauthorized payment method selection
+                # Validate opsi_pembayaran to prevent unauthorized payment method selection
                 allowed_payment_methods = ['P', 'S']  # Add the allowed payment method codes
                 
                 # Parameter Tampering Prevention

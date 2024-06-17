@@ -8,6 +8,74 @@
         <!-- Heading -->
         <h2 class="my-5 text-center">Checkout</h2>
 
+        <!-- Modal trigger button -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#alamatModal">Pilih Alamat</button>
+
+        <!-- Modal -->
+        <div class="modal fade bd-example-modal-lg" id="alamatModal" tabindex="-1" aria-labelledby="alamatModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="alamatModalLabel">Pilih Alamat</h5>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Provinsi</th>
+                                    <th>Kabupaten</th>
+                                    <th>Kecamatan</th>
+                                    <th>Kelurahan</th>
+                                    <th>Detail Alamat</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for address in addresses %}
+                                <tr>
+                                    <td>{{ address.provinsi.name }}</td>
+                                    <td>{{ address.kabupaten.name }}</td>
+                                    <td>{{ address.kecamatan.name }}</td>
+                                    <td>{{ address.kelurahan.name }}</td>
+                                    <td>{{ address.detail }}</td>
+                                    <td>
+                                        {% if address.is_primary %}
+                                        <span class="badge bg-info text-dark">Default</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <form action="{% url 'toko:pilih_alamat' address.pk %}" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-primary">Pilih</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Isi berdasarkan address yang dipilih pada modal -->
+        <div class="card my-4 selected-address">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="card-title">Nama Penerima: </h5>
+                        <p class="card-text">Provinsi: {{ selected_address.provinsi }}</p>
+                        <p class="card-text">Kabupaten: {{ selected_address.kabupaten }}</p>
+                        <p class="card-text">Kecamatan: {{ selected_address.kecamatan }}</p>
+                        <p class="card-text">Kelurahan: {{ selected_address.kelurahan }}</p>
+                    </div>
+                    <div class="col-md-6">   
+                        <p class="card-text">Alamat Lengkap: {{ selected_address.detail }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <form method="POST" name="formCheckout">
             {% csrf_token %}
             <!--Grid row-->
@@ -116,4 +184,5 @@
     </div>
 </main>
 <!--Main layout-->
+
 {% endblock content %}
