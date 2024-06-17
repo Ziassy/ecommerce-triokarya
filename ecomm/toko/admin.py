@@ -11,7 +11,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ['user', 'tanggal_mulai', 'tanggal_order', 'ordered']
 
 class AlamatPengirimanAdmin(admin.ModelAdmin):
-    list_display = ['user', 'alamat_1', 'alamat_2', 'kode_pos', 'negara']
+    list_display = ['user', 'detail_alamat', 'provinsi', 'kabupaten', 'kecamatan', 'kelurahan', 'kode_pos', 'nama_penerima']
 
 class PaymentAdmin(admin.ModelAdmin):
     list_display = ['user', 'amount', 'timestamp', 'payment_option', 'charge_id']

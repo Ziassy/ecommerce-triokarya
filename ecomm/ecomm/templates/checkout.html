@@ -12,7 +12,8 @@
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#alamatModal">Pilih Alamat</button>
 
         <!-- Modal -->
-        <div class="modal fade bd-example-modal-lg" id="alamatModal" tabindex="-1" aria-labelledby="alamatModalLabel" aria-hidden="true">
+        <div class="modal fade bd-example-modal-lg" id="alamatModal" tabindex="-1" aria-labelledby="alamatModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -22,22 +23,22 @@
                         <table class="table">
                             <thead>
                                 <tr>
+                                    <th>Penerima</th>
                                     <th>Provinsi</th>
                                     <th>Kabupaten</th>
                                     <th>Kecamatan</th>
                                     <th>Kelurahan</th>
-                                    <th>Detail Alamat</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for address in addresses %}
                                 <tr>
+                                    <td>{{ address.nama_penerima }}</td>
                                     <td>{{ address.provinsi.name }}</td>
                                     <td>{{ address.kabupaten.name }}</td>
                                     <td>{{ address.kecamatan.name }}</td>
                                     <td>{{ address.kelurahan.name }}</td>
-                                    <td>{{ address.detail }}</td>
                                     <td>
                                         {% if address.is_primary %}
                                         <span class="badge bg-info text-dark">Default</span>
@@ -63,13 +64,14 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <h5 class="card-title">Nama Penerima: </h5>
+                        <h5 class="card-title">Nama Penerima: {{ selected_address.nama_penerima }}</h5>
                         <p class="card-text">Provinsi: {{ selected_address.provinsi }}</p>
                         <p class="card-text">Kabupaten: {{ selected_address.kabupaten }}</p>
                         <p class="card-text">Kecamatan: {{ selected_address.kecamatan }}</p>
-                        <p class="card-text">Kelurahan: {{ selected_address.kelurahan }}</p>
                     </div>
-                    <div class="col-md-6">   
+                    <div class="col-md-6">
+                        <p class="card-text">Kelurahan: {{ selected_address.kelurahan }}</p>
+                        <p class="card-text">Kode Pos: {{ selected_address.kode_pos }}</p>
                         <p class="card-text">Alamat Lengkap: {{ selected_address.detail }}</p>
                     </div>
                 </div>
@@ -87,70 +89,31 @@
                         <!-- Delivery Method -->
                         <div class="my-3">
                             <h5>Pilih Metode Pengiriman:</h5>
-                            {% for value, name in form.fields.opsi_pengiriman.choices %}
+                            {% for value, name in form.opsi_pengiriman.field.choices %}
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="opsi_pengiriman" id="{{ value }}" value="{{ value }}" required />
+                                <input class="form-check-input" type="radio" name="opsi_pengiriman" id="{{ value }}"
+                                    value="{{ value }}" required />
                                 <label class="form-check-label" for="{{ value }}">{{ name }}</label>
                             </div>
                             {% endfor %}
                         </div>
-                        
-                        <!-- Alamat -->
-                        <p class="mb-0">
-                            Alamat Lengkap
-                        </p>
-                        <div class="form-outline mb-4">
-                            {{ form.alamat_1 }}
-                        </div>
-
-                        <!-- Alamat 2 -->
-                        <p class="mb-0">
-                            Alamat Gedung (optional)
-                        </p>
-                        <div class="form-outline mb-4">
-                            {{ form.alamat_2 }}
-                        </div>
-
-                        <!-- Grid row -->
-                        <div class="row">
-                            <!-- Grid column -->
-                            <div class="col-lg-4 col-md-12 mb-4">
-                                <p class="mb-0">
-                                    Negara
-                                </p>
-                                <div class="form-outline">
-                                    {{ form.negara }}
-                                </div>
-                            </div>
-                            <!-- Grid column -->
-
-                            <!-- Grid column -->
-                            <div class="col-lg-4 col-md-12 mb-4">
-                                <p class="mb-0">
-                                    Kode Pos
-                                </p>
-                                <div class="form-outline">
-                                    {{ form.kode_pos }}
-                                </div>
-                            </div>
-                            <!-- Grid column -->
-                        </div>
-                        <!-- Grid row -->
 
                         <hr />
 
                         <!-- Payment Method -->
                         <div class="my-3">
                             <h5>Pilih Metode Pembayaran:</h5>
-                            {% for value, name in form.fields.opsi_pembayaran.choices %}
+                            {% for value, name in form.opsi_pembayaran.field.choices %}
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="opsi_pembayaran" id="{{ value }}" value="{{ value }}" required />
+                                <input class="form-check-input" type="radio" name="opsi_pembayaran" id="{{ value }}"
+                                    value="{{ value }}" required />
                                 <label class="form-check-label" for="{{ value }}">{{ name }}</label>
                             </div>
                             {% endfor %}
                         </div>
-                        <hr class="mb-4" />                    
-                        <button class="btn btn-primary" type="submit" {% if keranjang.get_total_harga_order <= 0 %}disabled{% endif %}>Lanjutkan checkout</button>
+                        <hr class="mb-4" />
+                        <button class="btn btn-primary" type="submit"
+                            {% if keranjang.produk_items.count == 0 %}disabled{% endif %}>Lanjutkan checkout</button>
                     </div>
                     <!-- /.Card -->
                 </div>
@@ -173,9 +136,9 @@
                                 <small class="text-muted">{{ belanjaan.produk_item.deskripsi|truncatechars:50 }}</small>
                             </div>
                             {% if belanjaan.produk_item.harga_diskon %}
-                            <span class="text-muted">${{ belanjaan.get_total_harga_diskon_item }}
+                            <span class="text-muted">${{ belanjaan.get_total_harga_diskon_item }}</span>
                             {% else %}
-                            ${{ belanjaan.get_total_harga_item }}
+                            <span class="text-muted">${{ belanjaan.get_total_harga_item }}</span>
                             {% endif %}
                         </li>
                         {% endfor %}

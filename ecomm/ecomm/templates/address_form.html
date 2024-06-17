@@ -11,6 +11,11 @@
                 <form method="post" class="needs-validation" novalidate>
                     {% csrf_token %}
                     <div class="row">
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="labels" for="nama_penerima"><b>Penerima</b></label>
+                            <input type="text" class="form-control" id="nama_penerima" name="nama_penerima" placeholder="Penerima" required value="{{ form.nama_penerima.value|default_if_none:'' }}">
+                        </div>
                         <div class="col-md-6 mb-3">
                             <label class="labels" for="provinsi"><b>Provinsi</b></label>
                             <select class="form-control" id="provinsi" name="provinsi" required>
@@ -33,8 +38,6 @@
                                 {% endfor %}
                             </select>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="labels" for="kecamatan"><b>Kecamatan</b></label>
                             <select class="form-control" id="kecamatan" name="kecamatan" required>
@@ -57,7 +60,12 @@
                                 {% endfor %}
                             </select>
                         </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="labels" for="kode_pos"><b>Kode Pos</b></label>
+                            <input type="text" class="form-control" id="kode_pos" name="kode_pos" placeholder="Penerima" required value="{{ form.kode_pos.value|default_if_none:'' }}">
+                        </div>
                     </div>
+
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label class="labels" for="detail"><b>Detail Alamat</b></label>

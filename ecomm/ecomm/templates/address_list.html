@@ -9,10 +9,12 @@
         <table class="table">
         <thead>
             <tr>
+            <th>Receiver</th>
             <th>Province</th>
             <th>Regency</th>
             <th>Subdistrict</th>
             <th>Village</th>
+            <th>Zip Code</th>
             <th>Address Detail</th>
             <th></th>
             <th>Actions</th>
@@ -22,10 +24,12 @@
             {% if addresses %}
             {% for address in addresses %}
                 <tr>
+                    <td>{{ address.nama_penerima }}</td>
                     <td>{{ address.provinsi.name }}</td>
                     <td>{{ address.kabupaten.name }}</td>
                     <td>{{ address.kecamatan.name }}</td>
                     <td>{{ address.kelurahan.name }}</td>
+                    <td>{{ address.kode_pos }}</td>
                     <td>{{ address.detail }}</td>
                     <td>
                         {% if address.is_primary %}

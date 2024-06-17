@@ -84,7 +84,9 @@ class Address(models.Model):
     kabupaten = models.ForeignKey(Kabupaten, on_delete=models.CASCADE)
     kecamatan = models.ForeignKey(Kecamatan, on_delete=models.CASCADE)
     kelurahan = models.ForeignKey(Kelurahan, on_delete=models.CASCADE)
-    detail = models.CharField(max_length=255)
+    kode_pos = models.CharField(max_length=20, default='')
+    detail = models.CharField(max_length=255, default='')
+    nama_penerima = models.CharField(max_length=255, default='')
     is_primary = models.BooleanField(default=False)
 
     def __str__(self):
@@ -186,13 +188,16 @@ class Order(models.Model):
 
 class AlamatPengiriman(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    alamat_1 = models.CharField(max_length=100)
-    alamat_2 = models.CharField(max_length=100)
-    negara = models.CharField(max_length=100)
-    kode_pos = models.CharField(max_length=20)
+    detail_alamat = models.CharField(max_length=255, default='')
+    provinsi = models.CharField(max_length=100, default='')
+    kabupaten = models.CharField(max_length=100, default='')
+    kecamatan = models.CharField(max_length=100, default='')
+    kelurahan = models.CharField(max_length=100, default='')
+    kode_pos = models.CharField(max_length=10, default='')
+    nama_penerima = models.CharField(max_length=255, default='')
 
     def __str__(self):
-        return f"{self.user.username} - {self.alamat_1}"
+        return f"{self.user.username} - {self.detail_alamat}"
 
     class Meta:
         verbose_name_plural = 'AlamatPengiriman'

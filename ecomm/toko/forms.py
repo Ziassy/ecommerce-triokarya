@@ -11,14 +11,9 @@ class UserProfileForm(forms.ModelForm):
 class AddressForm(forms.ModelForm):
     class Meta:
         model = Address
-        fields = ['provinsi', 'kabupaten', 'kecamatan', 'kelurahan', 'detail', 'is_primary']
+        fields = ['nama_penerima','provinsi', 'kabupaten', 'kecamatan', 'kelurahan','kode_pos', 'detail', 'is_primary']
 
 class CheckoutForm(forms.Form):
-    alamat_1 = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Alamat Anda', 'class': 'textinput form-control'}))
-    alamat_2 = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Apartement, Rumah, atau yang lain (opsional)', 'class': 'textinput form-control'}))
-    negara = CountryField(blank_label='(Pilih Negara)').formfield(widget=CountrySelectWidget(attrs={'class': 'countryselectwidget form-select'}))
-    kode_pos = forms.CharField(widget=forms.TextInput(attrs={'class': 'textinput form-outline', 'placeholder': 'Kode Pos'}))
-    simpan_info_alamat = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
     opsi_pengiriman = forms.ChoiceField(widget=forms.RadioSelect(), choices=PILIHAN_PENGIRIMAN)
     opsi_pembayaran = forms.ChoiceField(widget=forms.RadioSelect(), choices=PILIHAN_PEMBAYARAN)
     

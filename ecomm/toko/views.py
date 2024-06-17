@@ -153,12 +153,15 @@ def empty_view_order_summary(request):
 class PilihAlamatView(LoginRequiredMixin, generic.View):
     def post(self, request, pk, *args, **kwargs):
         address = get_object_or_404(Address, pk=pk, user=request.user)
-        # Simpan address yang dipilih di session
+        # Mengambil ID dari alamat
         request.session['selected_address'] = {
+            'address_id': address.pk,
+            'nama_penerima': address.nama_penerima,
             'provinsi': address.provinsi.name,
             'kabupaten': address.kabupaten.name,
             'kecamatan': address.kecamatan.name,
             'kelurahan': address.kelurahan.name,
+            'kode_pos': address.kode_pos,
             'detail': address.detail
         }
         return redirect('toko:checkout')
@@ -202,10 +205,6 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
             if form.is_valid():
-                alamat_1 = form.cleaned_data.get('alamat_1')
-                alamat_2 = form.cleaned_data.get('alamat_2')
-                negara = form.cleaned_data.get('negara')
-                kode_pos = form.cleaned_data.get('kode_pos')
                 opsi_pembayaran = form.cleaned_data.get('opsi_pembayaran')
                 opsi_pengiriman = form.cleaned_data.get('opsi_pengiriman')
                 
@@ -215,19 +214,27 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
                 # Parameter Tampering Prevention
                 if opsi_pembayaran not in allowed_payment_methods:
                     raise PermissionDenied('Invalid payment method selected')
+                selected_address = self.request.session.get('selected_address', None)
+                if selected_address:
+                    alamat_pengiriman = AlamatPengiriman(
+                        user=self.request.user,
+                        detail_alamat=selected_address.get('detail'),
+                        provinsi=selected_address.get('provinsi'),
+                        kabupaten=selected_address.get('kabupaten'),
+                        kecamatan=selected_address.get('kecamatan'),
+                        kelurahan=selected_address.get('kelurahan'),
+                        kode_pos=selected_address.get('kode_pos'),
+                        nama_penerima=selected_address.get('nama_penerima')
+                    )
+                    alamat_pengiriman.save()
+                    order.alamat_pengiriman = alamat_pengiriman
+                    order.delivery_method = opsi_pengiriman
+                    order.save()
+                else:
+                    # Handle case when selected_address is None
+                    messages.warning(self.request, 'Alamat pengiriman belum dipilih')
+                    return redirect('toko:checkout')
                 
-                alamat_pengiriman = AlamatPengiriman(
-                    user=self.request.user,
-                    alamat_1=alamat_1,
-                    alamat_2=alamat_2,
-                    negara=negara,
-                    kode_pos=kode_pos,
-                )
-
-                alamat_pengiriman.save()
-                order.alamat_pengiriman = alamat_pengiriman
-                order.delivery_method = opsi_pengiriman
-                order.save()
                 if opsi_pembayaran == 'P':
                     return redirect('toko:payment', payment_method='paypal')
                 else:
@@ -356,7 +363,7 @@ def paypal_return(request):
             payment = Payment()
             payment.user=request.user
             payment.amount = order.get_total_harga_order()
-            payment.payment_option = 'P' # paypal kalai 'S' stripe
+            payment.payment_option = 'P' # paypal kalai
             payment.charge_id = f'{order.id}-{timezone.now()}'
             payment.timestamp = timezone.now()
             payment.save()
