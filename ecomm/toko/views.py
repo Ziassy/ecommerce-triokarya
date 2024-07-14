@@ -396,26 +396,47 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
         template_name = 'payment.html'
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
-            
-            paypal_data = {
-                'business': settings.PAYPAL_RECEIVER_EMAIL,
-                'amount': order.get_total_harga_order,
-                'item_name': f'Pembayaran belajanan order: {order.id}',
-                'invoice': f'{order.id}-{timezone.now().timestamp()}' ,
-                'currency_code': 'USD',
-                'notify_url': self.request.build_absolute_uri(reverse('paypal-ipn')),
-                'return_url': self.request.build_absolute_uri(reverse('toko:paypal-return')),
-                'cancel_return': self.request.build_absolute_uri(reverse('toko:paypal-cancel')),
-            }
-        
-            qPath = self.request.get_full_path()
-            isPaypal = 'paypal' in qPath
-        
-            form = PayPalPaymentsForm(initial=paypal_data)
+
+            if 'payment_method' in kwargs and kwargs['payment_method'] == 'paypal':
+                paypal_data = {
+                    'business': settings.PAYPAL_RECEIVER_EMAIL,
+                    'amount': order.get_total_harga_order(),
+                    'item_name': f'Pembayaran belajanan order: {order.id}',
+                    'invoice': f'{order.id}-{timezone.now().timestamp()}',
+                    'currency_code': 'USD',
+                    'notify_url': self.request.build_absolute_uri(reverse('paypal-ipn')),
+                    'return_url': self.request.build_absolute_uri(reverse('toko:paypal-return')),
+                    'cancel_return': self.request.build_absolute_uri(reverse('toko:paypal-cancel')),
+                }
+
+                form = PayPalPaymentsForm(initial=paypal_data)
+                context = {
+                    'paypalform': form,
+                    'order': order,
+                    'is_paypal': True,
+                }
+                return render(self.request, template_name, context)
+
+            elif 'payment_method' in kwargs and kwargs['payment_method'] == 'COD':
+                payment = Payment()
+                payment.user = self.request.user
+                payment.amount = order.get_total_harga_order()
+                payment.payment_option = 'C'
+                payment.charge_id = f'{order.id}-{timezone.now()}'
+                payment.timestamp = timezone.now()
+                payment.save()
+
+                order_produk_item = OrderProdukItem.objects.filter(user=self.request.user, ordered=False)
+                order_produk_item.update(ordered=True)
+
+                order.payment = payment
+                order.ordered = True
+                order.save()
+                print(order_produk_item)
+                messages.info(self.request, 'Pesanan Anda telah diterima, harap siapkan uang tunai untuk pembayaran saat pengiriman.')
+
             context = {
-                'paypalform': form,
                 'order': order,
-                'is_paypal': isPaypal,
             }
             return render(self.request, template_name, context)
 

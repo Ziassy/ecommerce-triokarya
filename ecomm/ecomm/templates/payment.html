@@ -11,8 +11,8 @@
         {% if is_paypal %}
         <div>{{ paypalform.render }}</div>
         {% else %}
-        <div>Pembayaran Strip belum diaktifkan gunakan Paypal</div>
-        <a href="{% url 'toko:payment' 'paypal' %}"><div class="btn btn-info">Paypal</div></a>
+        <div>Pembayaran COD akan dilakukan saat barang diterima.</div>
+        <a href="{% url 'toko:produk-list' %}" class="btn btn-primary mt-3">Kembali ke Home</a>
         {% endif %}
       </div>
     </div>
