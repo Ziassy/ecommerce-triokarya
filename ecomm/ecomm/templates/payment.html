@@ -11,8 +11,17 @@
         {% if is_paypal %}
         <div>{{ paypalform.render }}</div>
         {% else %}
-        <div>Pembayaran COD akan dilakukan saat barang diterima.</div>
-        <a href="{% url 'toko:produk-list' %}" class="btn btn-primary mt-3">Kembali ke Home</a>
+        <div>Pembayaran COD atau Transfer Manual akan dilakukan sesuai instruksi berikut:</div>
+        <ul>
+          {% if payment_method == 'COD' %}
+          <li>COD: Pembayaran akan dilakukan saat barang diterima.</li>
+          <a href="{% url 'toko:produk-list' %}" class="btn btn-primary mt-3">Kembali ke Home</a>
+          {% elif payment_method == 'manual' %}
+          <li>Transfer Manual: Silakan transfer ke rekening berikut dan konfirmasikan pembayaran Anda.</li>
+          <li>Nomor Rekening: 123456789 (Bank ABC)</li>
+          <a href="{% url 'toko:produk-list' %}" class="btn btn-primary mt-3">Kembali ke Home</a>
+          {% endif %}
+        </ul>
         {% endif %}
       </div>
     </div>

@@ -396,8 +396,9 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
         template_name = 'payment.html'
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
+            payment_method = kwargs.get('payment_method', 'paypal')
 
-            if 'payment_method' in kwargs and kwargs['payment_method'] == 'paypal':
+            if payment_method == 'paypal':
                 paypal_data = {
                     'business': settings.PAYPAL_RECEIVER_EMAIL,
                     'amount': order.get_total_harga_order(),
@@ -414,10 +415,11 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
                     'paypalform': form,
                     'order': order,
                     'is_paypal': True,
+                    'payment_method': payment_method,
                 }
                 return render(self.request, template_name, context)
 
-            elif 'payment_method' in kwargs and kwargs['payment_method'] == 'COD':
+            elif payment_method == 'COD':
                 payment = Payment()
                 payment.user = self.request.user
                 payment.amount = order.get_total_harga_order()
@@ -432,16 +434,44 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
                 order.payment = payment
                 order.ordered = True
                 order.save()
-                print(order_produk_item)
-                messages.info(self.request, 'Pesanan Anda telah diterima, harap siapkan uang tunai untuk pembayaran saat pengiriman.')
+
+                context = {
+                    'order': order,
+                    'payment_method': payment_method,
+                }
+                return render(self.request, template_name, context)
+
+            elif payment_method == 'manual':
+                payment = Payment()
+                payment.user = self.request.user
+                payment.amount = order.get_total_harga_order()
+                payment.payment_option = 'T'
+                payment.charge_id = f'{order.id}-{timezone.now()}'
+                payment.timestamp = timezone.now()
+                payment.save()
+
+                order_produk_item = OrderProdukItem.objects.filter(user=self.request.user, ordered=False)
+                order_produk_item.update(ordered=True)
+
+                order.payment = payment
+                order.ordered = True
+                order.save()
+
+                context = {
+                    'order': order,
+                    'payment_method': payment_method,
+                }
+                return render(self.request, template_name, context)
 
             context = {
                 'order': order,
+                'payment_method': payment_method,
             }
             return render(self.request, template_name, context)
 
         except ObjectDoesNotExist:
             return redirect('toko:checkout')
+
 
 
 
