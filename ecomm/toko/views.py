@@ -125,10 +125,10 @@ class ProductList(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         categories = {
-            'S': 'Shirt',
-            'SW': 'Sportswear',
-            'OW': 'Outerwear',
-            'C': 'Cosmetic'
+            'EP': 'Epson',
+            'CN': 'Cannon',
+            'BR': 'Brother',
+            'HP': 'HP'
         }
         selected_categories_values = self.request.GET.getlist('category')
         selected_categories_keys = [category for category, name in categories.items() if name in selected_categories_values]
@@ -550,11 +550,10 @@ class UpdateOrderStatusView(View):
         order_id = self.kwargs['pk']
         order = get_object_or_404(Order, pk=order_id)
         
-        # Lakukan perubahan status sesuai dengan kondisi yang diinginkan
         if order.status == 'P':
             order.status = 'S'  # Ubah status dari Pending ke Shipped
         elif order.status == 'S':
             order.status = 'D'  # Ubah status dari Shipped ke Delivered
         
         order.save()
-        return redirect('toko:order-detail', pk=order_id)  # Ganti 'order-detail' dengan nama yang sesuai di urls.py
+        return redirect('toko:order-detail', pk=order_id) 
