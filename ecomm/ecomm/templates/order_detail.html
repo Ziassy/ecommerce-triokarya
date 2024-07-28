@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-5">
   <h2>Detail Pesanan #{{ order.id }}</h2>
-  <div class="row">
-    <div class="col-md-6">
+  <div class="row mt-4">
+    <div class="col-md-5">
       <h3>Alamat Pengiriman</h3>
       <p>{{ order.alamat_pengiriman.nama_penerima }}</p>
       <p>{{ order.alamat_pengiriman.detail_alamat }}</p>
@@ -12,10 +12,15 @@
       <p>{{ order.alamat_pengiriman.kabupaten }}, {{ order.alamat_pengiriman.provinsi }}</p>
       <p>{{ order.alamat_pengiriman.kode_pos }}</p>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-5">
       <h3>Metode Pembayaran</h3>
       <p>{{ order.payment.get_payment_option_display }}</p>
-      <p>Total: ${{ order.payment.amount }}</p>
+      <h3>Metode Pengiriman</h3>
+      <p>{{ order.get_delivery_method_display }}</p>
+      <p>Total: Rp. {{ order.payment.amount }}</p>
+    </div>
+    <div class="col-md-2">
+      <h5>Status Pembayaran</h5>
     </div>
   </div>
   <h3>Produk</h3>
@@ -24,6 +29,7 @@
       <tr>
         <th>Produk</th>
         <th>Jumlah</th>
+        <th>Diskon</th>
         <th>Harga</th>
       </tr>
     </thead>
@@ -32,10 +38,29 @@
       <tr>
         <td>{{ item.produk_item.nama_produk }}</td>
         <td>{{ item.quantity }}</td>
-        <td>${{ item.get_total_harga_item }}</td>
+        <td>Rp. {{ item.get_total_harga_diskon_item|default_if_none:"0" }}</td>
+        <td>Rp. {{ item.get_total_harga_item|default_if_none:"0" }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  {% if request.user.is_staff %}
+  <div class="row mt-3 mb-5">
+    <div class="col">
+      <!-- Button untuk mengubah status -->
+      {% if order.status == 'P' %}
+      <form action="{% url 'toko:update-order-status' order.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Kirim</button>
+      </form>
+      {% elif order.status == 'S' %}
+      <form action="{% url 'toko:update-order-status' order.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-info">Terima</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
 </div>
 {% endblock content %}

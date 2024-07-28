@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-5">
   <h2>Riwayat Pesanan</h2>
+  {% if orders %}
   <table class="table">
     <thead>
       <tr>
         <th>ID Pesanan</th>
+        {% if request.user.is_staff %}
+        <th>Penngguna</th>
+        {%endif%}
         <th>Tanggal Pesanan</th>
         <th>Total</th>
         <th>Status</th>
@@ -17,13 +21,19 @@
       {% for order in orders %}
       <tr>
         <td>{{ order.id }}</td>
-        <td>{{ order.tanggal_order }}</td>
-        <td>${{ order.get_total_harga_order }}</td>
+        {% if request.user.is_staff %}
+        <td>{{ order.user }}</td>
+        {%endif%}
+        <td>{{ order.tanggal_order|date:"d-m-Y H:i:s" }}</td>
+        <td>Rp. {{ order.get_total_harga_order }}</td>
         <td>{{ order.get_order_status_display }}</td>
         <td><a href="{% url 'toko:order-detail' order.pk %}" class="btn btn-info">Lihat Detail</a></td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  {% else %}
+  <p class="text-center mt-5 mb-5">Kamu belum memiliki riwayat pesanan.</p>
+  {% endif %}
 </div>
 {% endblock content %}

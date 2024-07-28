@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import permission_required
 from django.db.models import Avg
 from django.contrib.auth.decorators import login_required
 from django.views import View
+from django.contrib.auth.mixins import UserPassesTestMixin
 
 
 from .forms import CheckoutForm, ContactForm, ReviewForm, UserProfileForm, AddressForm
@@ -513,17 +514,41 @@ def paypal_cancel(request):
 
 class OrderHistoryView(View):
     def get(self, request, *args, **kwargs):
-        orders = Order.objects.filter(user=request.user, ordered=True)
+        if request.user.is_staff:  # Check if the user is an admin
+            orders = Order.objects.filter(ordered=True).order_by('-tanggal_order')
+        else:
+            orders = Order.objects.filter(user=request.user, ordered=True).order_by('-tanggal_order')
+        
         context = {
             'orders': orders,
         }
         return render(request, 'order_history.html', context)
 
-class OrderDetailView(View):
+class OrderDetailView(UserPassesTestMixin, View):
     def get(self, request, pk, *args, **kwargs):
-        order = get_object_or_404(Order, pk=pk, user=request.user, ordered=True)
+        order = get_object_or_404(Order, pk=pk)
         context = {
             'order': order,
         }
         return render(request, 'order_detail.html', context)
 
+    def is_admin_or_owner(self):
+        order = get_object_or_404(Order, pk=self.kwargs['pk'])
+        return self.request.user.is_superuser or self.request.user == order.user
+
+    test_func = is_admin_or_owner
+
+
+class UpdateOrderStatusView(View):
+    def post(self, request, *args, **kwargs):
+        order_id = self.kwargs['pk']
+        order = get_object_or_404(Order, pk=order_id)
+        
+        # Lakukan perubahan status sesuai dengan kondisi yang diinginkan
+        if order.status == 'P':
+            order.status = 'S'  # Ubah status dari Pending ke Shipped
+        elif order.status == 'S':
+            order.status = 'D'  # Ubah status dari Shipped ke Delivered
+        
+        order.save()
+        return redirect('toko:order-detail', pk=order_id)  # Ganti 'order-detail' dengan nama yang sesuai di urls.py

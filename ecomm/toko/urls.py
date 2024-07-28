@@ -28,4 +28,5 @@ urlpatterns = [
      path('pilih-alamat/<int:pk>/', views.PilihAlamatView.as_view(), name='pilih_alamat'),
      path('order-history/', views.OrderHistoryView.as_view(), name='order-history'),
      path('order-detail/<int:pk>/', views.OrderDetailView.as_view(), name='order-detail'),
+     path('update-order-status/<int:pk>/', views.UpdateOrderStatusView.as_view(), name='update-order-status'),
 ]

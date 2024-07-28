@@ -148,9 +148,13 @@ class OrderProdukItem(models.Model):
         return f"{self.quantity} of {self.produk_item.nama_produk}"
 
     def get_total_harga_item(self):
+        if self.produk_item.harga is None:
+            return 0
         return self.quantity * self.produk_item.harga
     
     def get_total_harga_diskon_item(self):
+        if self.produk_item.harga_diskon is None:
+            return 0
         return self.quantity * self.produk_item.harga_diskon
 
     def get_total_hemat_item(self):
@@ -165,6 +169,7 @@ class OrderProdukItem(models.Model):
         if self.produk_item.harga_diskon:
             return self.get_total_hemat_item()
         return 0
+
 
 
 class Order(models.Model):
