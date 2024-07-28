@@ -510,3 +510,20 @@ def paypal_cancel(request):
     return redirect('toko:order-summary')
 
 
+
+class OrderHistoryView(View):
+    def get(self, request, *args, **kwargs):
+        orders = Order.objects.filter(user=request.user, ordered=True)
+        context = {
+            'orders': orders,
+        }
+        return render(request, 'order_history.html', context)
+
+class OrderDetailView(View):
+    def get(self, request, pk, *args, **kwargs):
+        order = get_object_or_404(Order, pk=pk, user=request.user, ordered=True)
+        context = {
+            'order': order,
+        }
+        return render(request, 'order_detail.html', context)
+

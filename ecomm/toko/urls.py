@@ -25,5 +25,7 @@ urlpatterns = [
      path('address/add/', views.AddressView.as_view(), name='address_add'),
      path('address/<int:pk>/edit/', views.AddressView.as_view(), name='address_edit'),
      path('address/<int:pk>/delete/', views.AddressDeleteView.as_view(), name='address_delete'),
-     path('pilih-alamat/<int:pk>/', views.PilihAlamatView.as_view(), name='pilih_alamat')
+     path('pilih-alamat/<int:pk>/', views.PilihAlamatView.as_view(), name='pilih_alamat'),
+     path('order-history/', views.OrderHistoryView.as_view(), name='order-history'),
+     path('order-detail/<int:pk>/', views.OrderDetailView.as_view(), name='order-detail'),
 ]

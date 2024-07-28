@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <h2>Detail Pesanan #{{ order.id }}</h2>
+  <div class="row">
+    <div class="col-md-6">
+      <h3>Alamat Pengiriman</h3>
+      <p>{{ order.alamat_pengiriman.nama_penerima }}</p>
+      <p>{{ order.alamat_pengiriman.detail_alamat }}</p>
+      <p>{{ order.alamat_pengiriman.kelurahan }}, {{ order.alamat_pengiriman.kecamatan }}</p>
+      <p>{{ order.alamat_pengiriman.kabupaten }}, {{ order.alamat_pengiriman.provinsi }}</p>
+      <p>{{ order.alamat_pengiriman.kode_pos }}</p>
+    </div>
+    <div class="col-md-6">
+      <h3>Metode Pembayaran</h3>
+      <p>{{ order.payment.get_payment_option_display }}</p>
+      <p>Total: ${{ order.payment.amount }}</p>
+    </div>
+  </div>
+  <h3>Produk</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Produk</th>
+        <th>Jumlah</th>
+        <th>Harga</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in order.produk_items.all %}
+      <tr>
+        <td>{{ item.produk_item.nama_produk }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>${{ item.get_total_harga_item }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock content %}
