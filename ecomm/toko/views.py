@@ -15,6 +15,7 @@ from django.db.models import Avg
 from django.contrib.auth.decorators import login_required
 from django.views import View
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.core.paginator import Paginator
 
 
 from .forms import CheckoutForm, ContactForm, ReviewForm, UserProfileForm, AddressForm
@@ -112,7 +113,8 @@ class AddressDeleteView(LoginRequiredMixin, View):
 class ProductList(generic.ListView):
     template_name = 'carousel.html'
     queryset = ProdukItem.objects.all()
-    
+    paginate_by = 6  # Menentukan jumlah item per halaman
+
     def get_queryset(self):
         queryset = super().get_queryset()
         keyword = self.request.GET.get('keyword')
@@ -127,18 +129,22 @@ class ProductList(generic.ListView):
             'SW': 'Sportswear',
             'OW': 'Outerwear',
             'C': 'Cosmetic'
-        }  
-        selected_categories_values = self.request.GET.getlist('category')  
+        }
+        selected_categories_values = self.request.GET.getlist('category')
         selected_categories_keys = [category for category, name in categories.items() if name in selected_categories_values]
         sorted_products = self.get_queryset()  # Use filtered queryset to get keyword search & filter
 
         if selected_categories_keys:
             sorted_products = sorted_products.filter(kategori__in=selected_categories_keys)
+        
+        paginator = Paginator(sorted_products, self.paginate_by)
+        page = self.request.GET.get('page')
+        products = paginator.get_page(page)
 
         context['categories'] = categories.values()
         context['selected_categories'] = selected_categories_values
-        context['object_list'] = sorted_products
-        
+        context['object_list'] = products  # Pass paginated products to the context
+
         if 'carousel' in self.request.path:
             context['show_search_icon'] = True
             context['keyword'] = self.request.GET.get('keyword', '')  # Pass keyword to the context
