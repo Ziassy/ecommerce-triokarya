@@ -7,10 +7,10 @@ import datetime
 
 
 PILIHAN_KATEGORI = (
-    ('S', 'Shirt'),
-    ('SW', 'Sport wear'),
-    ('OW', 'Outwear'),
-    ('C', 'Cosmetic')
+    ('EP', 'Epson'),
+    ('CN', 'Cannon'),
+    ('BR', 'Brother'),
+    ('HP', 'HP')
 )
 
 PILIHAN_LABEL = (
