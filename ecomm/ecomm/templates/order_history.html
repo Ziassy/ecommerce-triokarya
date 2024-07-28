@@ -9,12 +9,15 @@
       <tr>
         <th>ID Pesanan</th>
         {% if request.user.is_staff %}
-        <th>Penngguna</th>
+        <th>Pelanggan</th>
         {%endif%}
         <th>Tanggal Pesanan</th>
         <th>Total</th>
-        <th>Status</th>
-        <th>Aksi</th>
+        <th>Status <br> Pengiriman</th>
+        <th>Status <br> Pembayaran</th>
+        <th>Konfirmasi Pembayaran</th>
+        <th></th>
+
       </tr>
     </thead>
     <tbody>
@@ -27,7 +30,34 @@
         <td>{{ order.tanggal_order|date:"d-m-Y H:i:s" }}</td>
         <td>Rp. {{ order.get_total_harga_order }}</td>
         <td>{{ order.get_order_status_display }}</td>
-        <td><a href="{% url 'toko:order-detail' order.pk %}" class="btn btn-info">Lihat Detail</a></td>
+        <td>
+          <p>
+              {% if order.payment.status == 'B' %}
+                  <span class="badge bg-warning text-white">Belum di bayar</span>
+              {% elif order.payment.status == 'S' %}
+                  <span class="badge bg-success">Pembayaran berhasil</span>
+              {% elif order.payment.status == 'F' %}
+                  <span class="badge bg-danger text-white">Pembayaran gagal</span>
+              {% endif %}
+          </p>
+        </td>
+        <td> 
+          {% if request.user.is_staff %}
+            {% if order.payment.status == 'B' %}
+              <div class="d-flex">
+                    <form method="post" action="{% url 'toko:update_payment_status' order.id 'S' %}" class="me-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">Berhasil</button>
+                    </form>
+                    <form method="post" action="{% url 'toko:update_payment_status' order.id 'F' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Gagal</button>
+                    </form>
+              </div>
+            {% endif %}
+          {% endif %}
+        </td>
+        <td><a href="{% url 'toko:order-detail' order.pk %}" class="btn btn-light">Lihat Detail</a></td>
       </tr>
       {% endfor %}
     </tbody>

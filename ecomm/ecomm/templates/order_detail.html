@@ -21,6 +21,16 @@
     </div>
     <div class="col-md-2">
       <h5>Status Pembayaran</h5>
+      <p>
+              {% if order.payment.status == 'B' %}
+                  <span class="badge bg-warning text-white">Belum di bayar</span>
+              {% elif order.payment.status == 'S' %}
+                  <span class="badge bg-success">Pembayaran berhasil</span>
+              {% elif order.payment.status == 'F' %}
+                  <span class="badge bg-danger text-white">Pembayaran gagal</span>
+              {% endif %}
+          </p>
+      
     </div>
   </div>
   <h3>Produk</h3>

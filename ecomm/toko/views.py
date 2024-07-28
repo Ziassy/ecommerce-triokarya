@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.views import View
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.paginator import Paginator
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 from .forms import CheckoutForm, ContactForm, ReviewForm, UserProfileForm, AddressForm
@@ -433,6 +434,7 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
                 payment.payment_option = 'C'
                 payment.charge_id = f'{order.id}-{timezone.now()}'
                 payment.timestamp = timezone.now()
+                payment.status = 'S'
                 payment.save()
 
                 order_produk_item = OrderProdukItem.objects.filter(user=self.request.user, ordered=False)
@@ -455,6 +457,7 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
                 payment.payment_option = 'T'
                 payment.charge_id = f'{order.id}-{timezone.now()}'
                 payment.timestamp = timezone.now()
+                payment.status = 'S'
                 payment.save()
 
                 order_produk_item = OrderProdukItem.objects.filter(user=self.request.user, ordered=False)
@@ -557,3 +560,11 @@ class UpdateOrderStatusView(View):
         
         order.save()
         return redirect('toko:order-detail', pk=order_id) 
+    
+@staff_member_required
+def update_payment_status(request, order_id, status):
+    order = get_object_or_404(Order, id=order_id)
+    if order.payment:
+        order.payment.status = status
+        order.payment.save()
+    return redirect('toko:order-history')

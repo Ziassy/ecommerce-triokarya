@@ -41,6 +41,12 @@ STATUS_CHOICES_PENGIRIMAN = (
     ('D', 'Delivered'),
 )
 
+STATUS_CHOICES_PEMBAYARAN = (
+    ('B', 'Belum di bayar'),
+    ('S', 'Pembayaran berhasil'),
+    ('F', 'Pembayaran gagal'),
+)
+
 User = get_user_model()
 
 class UserProfile(models.Model):
@@ -225,6 +231,7 @@ class Payment(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     payment_option = models.CharField(choices=PILIHAN_PEMBAYARAN, max_length=1)
     charge_id = models.CharField(max_length=50)
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES_PEMBAYARAN, default='B')
 
     def __self__(self):
         return self.user.username
