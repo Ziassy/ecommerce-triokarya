@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
-
+{% load cart_template_tags %}
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
   <h2>Detail Pesanan #{{ order.id }}</h2>
   <div class="row mt-4">
     <div class="col-md-5">
@@ -17,7 +17,7 @@
       <p>{{ order.payment.get_payment_option_display }}</p>
       <h3>Metode Pengiriman</h3>
       <p>{{ order.get_delivery_method_display }}</p>
-      <p>Total: Rp. {{ order.payment.amount }}</p>
+      <p>Total: {{ order.payment.amount|currency_idr }}</p>
     </div>
     <div class="col-md-2">
       <h5>Status Pembayaran</h5>
@@ -39,8 +39,8 @@
       <tr>
         <th>Produk</th>
         <th>Jumlah</th>
-        <th>Diskon</th>
-        <th>Harga</th>
+        <th>Total Diskon</th>
+        <th>Total Harga</th>
       </tr>
     </thead>
     <tbody>
@@ -48,8 +48,8 @@
       <tr>
         <td>{{ item.produk_item.nama_produk }}</td>
         <td>{{ item.quantity }}</td>
-        <td>Rp. {{ item.get_total_harga_diskon_item|default_if_none:"0" }}</td>
-        <td>Rp. {{ item.get_total_harga_item|default_if_none:"0" }}</td>
+        <td><span class="text-danger"><del>{{ item.get_total_hemat_item|currency_idr }}</del></span></td>
+        <td>{{ item.get_total_harga_diskon_item|currency_idr}}</td>
       </tr>
       {% endfor %}
     </tbody>

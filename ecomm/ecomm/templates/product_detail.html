@@ -20,10 +20,10 @@
                             <h1 class="h2">{{ object.nama_produk }}</h1>
                             <p class="h3 py-2">
                                 {% if object.harga_diskon %}
-                                <span class="text-danger"><del>${{ object.harga }}</del></span>
-                                <span><b>${{ object.harga_diskon }}</b></span>
+                                <span class="text-danger"><del>{{ object.harga|currency_idr }}</del></span>
+                                <span><b>{{ object.harga_diskon|currency_idr }}</b></span>
                                 {% else %}
-                                <span>${{ object.harga }}</span>
+                                <span>{{ object.harga|currency_idr }}</span>
                                 {% endif %}
                             </p>
                             <p class="py-2">

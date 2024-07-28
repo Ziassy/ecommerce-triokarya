@@ -19,3 +19,12 @@ def convert_to_wib(value):
     jakarta_timezone = pytz.timezone('Asia/Jakarta')
     localized_time = value.astimezone(jakarta_timezone)
     return localized_time.strftime('%d-%m-%Y %H:%M:%S %Z')
+
+@register.filter
+def currency_idr(value):
+    try:
+        value = float(value)
+    except (TypeError, ValueError):
+        return value  # Return the original value if conversion fails
+
+    return "Rp {:,.0f}".format(value).replace(',', '.')

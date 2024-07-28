@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load cart_template_tags %}
 {% block content %}
 <!-- Start Content -->
     <div class="container py-5">
@@ -51,10 +52,10 @@
 
                                     <p class="text-center mb-0">
                                         {% if pItem.harga_diskon %}
-                                        <span class="text-danger"><del>${{ pItem.harga }}</del></span>
-                                        <span><b>${{ pItem.harga_diskon }}</b></span>
+                                        <span class="text-danger"><del>{{ pItem.harga|currency_idr }}</del></span>
+                                        <span><b>{{ pItem.harga_diskon|currency_idr }}</b></span>
                                         {% else %}
-                                        <span>${{ pItem.harga }}</span>
+                                        <span>{{ pItem.harga|currency_idr }}</span>
                                         {% endif %}
                                     </p>
                                 </div>

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load cart_template_tags %}
 
 {% block content %}
 <!-- Main layout -->
@@ -136,23 +137,22 @@
                                 <small class="text-muted">{{ belanjaan.produk_item.deskripsi|truncatechars:50 }}</small>
                             </div>
                             {% if belanjaan.produk_item.harga_diskon %}
-                            <span class="text-muted">${{ belanjaan.get_total_harga_diskon_item }}</span>
+                            <span class="text-muted">{{ belanjaan.get_total_harga_diskon_item |currency_idr}}</span>
                             {% else %}
-                            <span class="text-muted">${{ belanjaan.get_total_harga_item }}</span>
+                            <span class="text-muted">{{ belanjaan.get_total_harga_item|currency_idr }}</span>
                             {% endif %}
                         </li>
                         {% endfor %}
 
                         <!-- Total Diskon -->
                         <li class="list-group-item d-flex justify-content-between">
-                            <span>Total Diskon (USD)</span>
-                            <strong class="text-danger">-${{ keranjang.get_total_diskon_order }}</strong>
+                            <span>Total Diskon (IDR)</span>
+                            <strong class="text-danger">-{{ keranjang.get_total_diskon_order |currency_idr}}</strong>
                         </li>
 
-                        <!-- Total (USD) after applying discounts -->
                         <li class="list-group-item d-flex justify-content-between">
-                            <span>Total (USD)</span>
-                            <strong class="text-success">${{ keranjang.get_total_harga_order }}</strong>
+                            <span>Total (IDR)</span>
+                            <strong class="text-success">{{ keranjang.get_total_harga_order |currency_idr}}</strong>
                         </li>
                     </ul>
                     <!-- Cart -->

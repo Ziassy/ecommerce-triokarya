@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load cart_template_tags %}
 {% block content %}
 <div class="container mt-5">
   <h2>Riwayat Pesanan</h2>
@@ -8,14 +8,16 @@
     <thead>
       <tr>
         <th>ID Pesanan</th>
+        <th>Tanggal Pesanan</th>
         {% if request.user.is_staff %}
         <th>Pelanggan</th>
         {%endif%}
-        <th>Tanggal Pesanan</th>
         <th>Total</th>
         <th>Status <br> Pengiriman</th>
         <th>Status <br> Pembayaran</th>
+        {% if request.user.is_staff %}
         <th>Konfirmasi Pembayaran</th>
+        {%endif%}
         <th></th>
 
       </tr>
@@ -24,11 +26,11 @@
       {% for order in orders %}
       <tr>
         <td>{{ order.id }}</td>
+        <td>{{ order.tanggal_order|date:"d-m-Y H:i:s" }}</td>
         {% if request.user.is_staff %}
         <td>{{ order.user }}</td>
         {%endif%}
-        <td>{{ order.tanggal_order|date:"d-m-Y H:i:s" }}</td>
-        <td>Rp. {{ order.get_total_harga_order }}</td>
+        <td>{{ order.get_total_harga_order|currency_idr }}</td>
         <td>{{ order.get_order_status_display }}</td>
         <td>
           <p>
@@ -41,8 +43,9 @@
               {% endif %}
           </p>
         </td>
+        {% if request.user.is_staff %}
         <td> 
-          {% if request.user.is_staff %}
+          
             {% if order.payment.status == 'B' %}
               <div class="d-flex">
                     <form method="post" action="{% url 'toko:update_payment_status' order.id 'S' %}" class="me-2">
@@ -55,8 +58,8 @@
                     </form>
               </div>
             {% endif %}
-          {% endif %}
         </td>
+        {% endif %}
         <td><a href="{% url 'toko:order-detail' order.pk %}" class="btn btn-light">Lihat Detail</a></td>
       </tr>
       {% endfor %}

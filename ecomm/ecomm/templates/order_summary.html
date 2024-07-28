@@ -1,5 +1,5 @@
 {% load static %}
-
+{% load cart_template_tags %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,16 +15,16 @@
 </head>
 
 <body>
-
-    <div class="container padding-bottom-3x mb-1">
-
-        <div class="table-responsive shopping-cart">
+    <div class="padding-bottom-3x mb-1 ml-5 mr-5 mt-5">
+        <h1 class="text-center mb-5">Keranjang Belanja</h1>
+        <div class=" table-responsive shopping-cart">
             <table class="table">
                 <thead>
                     <tr>
                         <th>Product Name</th>
                         <th class="text-center">Quantity</th>
                         <th class="text-center">Normal Price</th>
+                        <th class="text-center">Diskon</th>
                         <th class="text-center">Subtotal</th>
                         <th class="text-center"></th>
                     </tr>
@@ -46,21 +46,22 @@
                         <td class="text-center text-lg text-medium">
                             {{ pItem.quantity }}
                         </td>
-                        <td class="text-center text-lg text-medium">$
+                        <td class="text-center text-lg text-medium">
                         {% if pItem.produk_item.harga_diskon %}
-                        {{ pItem.produk_item.harga_diskon }}
+                        {{ pItem.produk_item.harga_diskon|currency_idr }}
                         {% else %}
-                        {{ pItem.produk_item.harga }}
+                        {{ pItem.produk_item.harga|currency_idr }}
                         {% endif %}
                         </td>
                         <td class="text-center text-lg text-medium">
                         {% if pItem.produk_item.harga_diskon %}
-                        <span class="text-danger"><del>${{ pItem.get_total_harga_item }}</del></span>
-                        <span class="badge badge-danger rounded-pill d-inline">Hemat ${{ pItem.get_total_hemat_item }}</span>
+                        <span class="text-danger"><del>{{ pItem.get_total_harga_item|currency_idr }}</del></span>
+                        <span class="badge badge-danger rounded-pill d-inline">Hemat {{ pItem.get_total_hemat_item|currency_idr }}</span>
                         {% else %}
-                        ${{ pItem.get_total_harga_item }}
+                        {{ 0|currency_idr }}
                         {% endif %}
                         </td>
+                        <td>{{ pItem.get_total_harga_diskon_item|currency_idr }}</td>
                     </tr>
                     {% empty %}
                     <tr>
@@ -74,7 +75,7 @@
         </div>
         {% if keranjang.get_total_harga_order %}
         <div class="shopping-cart-footer">
-            <div class="column text-lg">Subtotal: <span class="text-medium">${{ keranjang.get_total_harga_order }}</span></div>
+            <div class="column text-lg">Subtotal: <span class="text-medium">{{ keranjang.get_total_harga_order|currency_idr }}</span></div>
         </div>
         <div class="shopping-cart-footer">
             <div class="column">
