@@ -35,7 +35,7 @@ PILIHAN_PENGIRIMAN = (
     ('EX', 'Kurir Eksternal'),
 )
 
-STATUS_CHOICES = (
+STATUS_CHOICES_PENGIRIMAN = (
     ('P', 'Pending'),
     ('S', 'Shipped'),
     ('D', 'Delivered'),
@@ -181,7 +181,7 @@ class Order(models.Model):
     alamat_pengiriman = models.ForeignKey('AlamatPengiriman', on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey('Payment', on_delete=models.SET_NULL, blank=True, null=True)
     delivery_method = models.CharField(max_length=2,choices=PILIHAN_PENGIRIMAN,default='PR')
-    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='P')
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES_PENGIRIMAN, default='P')
 
     def __str__(self):
         return self.user.username
@@ -200,7 +200,7 @@ class Order(models.Model):
         return total_diskon
     
     def get_order_status_display(self):
-        return dict(STATUS_CHOICES).get(self.status, 'Unknown')
+        return dict(STATUS_CHOICES_PENGIRIMAN).get(self.status, 'Unknown')
     
 
 class AlamatPengiriman(models.Model):
