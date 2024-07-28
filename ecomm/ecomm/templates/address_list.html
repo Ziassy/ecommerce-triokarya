@@ -4,7 +4,7 @@
 
 {% load static %}
     <div class="container mt-5">
-        <h2 class="text-center">My addresses</h2>
+        <h2 class="text-center">My Addresses</h2>
         <a href="{% url 'toko:address_add' %}" class="btn btn-primary mb-3">Add Address</a>
         <table class="table">
         <thead>
@@ -15,7 +15,6 @@
             <th>Subdistrict</th>
             <th>Village</th>
             <th>Zip Code</th>
-            <th>Address Detail</th>
             <th></th>
             <th>Actions</th>
             </tr>
@@ -30,7 +29,6 @@
                     <td>{{ address.kecamatan.name }}</td>
                     <td>{{ address.kelurahan.name }}</td>
                     <td>{{ address.kode_pos }}</td>
-                    <td>{{ address.detail }}</td>
                     <td>
                         {% if address.is_primary %}
                         <span class="badge bg-info text-dark">Default</span>
@@ -50,7 +48,7 @@
             {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan="7" class="text-center py-5 pb-5">No addresses added yet</td>
+                    <td colspan="7" class="text-center py-5 pb-5">Belum ada alamat yang ditambahkan</td>
                 </tr>
             {% endif %}
         </tbody>
