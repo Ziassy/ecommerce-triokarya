@@ -137,6 +137,14 @@ class ProductList(generic.ListView):
 
         if selected_categories_keys:
             sorted_products = sorted_products.filter(kategori__in=selected_categories_keys)
+            
+        # Calculate average rating for each product
+        for produk in sorted_products:
+            reviews = produk.reviews.all()
+            average_rating = reviews.aggregate(Avg('rating'))['rating__avg']
+            average_rating = round(average_rating, 1) if average_rating else 0
+            produk.average_rating = average_rating
+            produk.total_reviews = reviews.count()
         
         paginator = Paginator(sorted_products, self.paginate_by)
         page = self.request.GET.get('page')

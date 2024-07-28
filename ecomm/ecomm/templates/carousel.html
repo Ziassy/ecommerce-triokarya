@@ -50,13 +50,23 @@
                                         <li>Category : {{ pItem.get_kategori_display }}</li>
                                     </ul>
 
-                                    <p class="text-center mb-0">
+                                    <p class=" mt-2">
                                         {% if pItem.harga_diskon %}
                                         <span class="text-danger"><del>{{ pItem.harga|currency_idr }}</del></span>
                                         <span><b>{{ pItem.harga_diskon|currency_idr }}</b></span>
                                         {% else %}
-                                        <span>{{ pItem.harga|currency_idr }}</span>
+                                        <span><b>{{ pItem.harga|currency_idr }}</b></span>
                                         {% endif %}
+                                    </p>
+                                    <p class="py-2">
+                                        <span class="list-inline-item text-dark"> {{ pItem.average_rating|default:"0" }}</span>
+                                        {% for _ in ''|center:5 %}
+                                            {% if forloop.counter0 < pItem.average_rating|default:"0"|add:"0" %}
+                                                <i class="fa fa-star text-warning"></i>
+                                            {% else %}
+                                                <i class="fa fa-star text-secondary"></i>
+                                            {% endif %}
+                                        {% endfor %}
                                     </p>
                                 </div>
                             </div>
