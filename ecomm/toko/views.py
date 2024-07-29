@@ -442,7 +442,7 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
                 payment.payment_option = 'C'
                 payment.charge_id = f'{order.id}-{timezone.now()}'
                 payment.timestamp = timezone.now()
-                payment.status = 'S'
+                payment.status = 'B'
                 payment.save()
 
                 order_produk_item = OrderProdukItem.objects.filter(user=self.request.user, ordered=False)
@@ -465,7 +465,7 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
                 payment.payment_option = 'T'
                 payment.charge_id = f'{order.id}-{timezone.now()}'
                 payment.timestamp = timezone.now()
-                payment.status = 'S'
+                payment.status = 'B'
                 payment.save()
 
                 order_produk_item = OrderProdukItem.objects.filter(user=self.request.user, ordered=False)
@@ -546,6 +546,7 @@ class OrderDetailView(UserPassesTestMixin, View):
         order = get_object_or_404(Order, pk=pk)
         context = {
             'order': order,
+            'user': request.user,  # Mengirimkan data pengguna ke template
         }
         return render(request, 'order_detail.html', context)
 
