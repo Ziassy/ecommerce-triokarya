@@ -38,7 +38,7 @@
                             </p>
                             <ul class="list-inline">
                                 <li class="list-inline-item">
-                                    <h6>Category:</h6>
+                                    <h6>Kategori:</h6>
                                 </li>
                                 <li class="list-inline-item">
                                     <p class="text-muted"><strong>{{ object.get_kategori_display }}</strong></p>
@@ -46,14 +46,14 @@
                             </ul>
                             <ul class="list-inline">
                                 <li class="list-inline-item">
-                                    <h6>Weight:</h6>
+                                    <h6>Berat:</h6>
                                 </li>
                                 <li class="list-inline-item">
                                     <p class="text-muted"><strong>{{ object.berat|floatformat:0 }}g</strong></p>
                                 </li>
                             </ul>
 
-                            <h6>Description:</h6>
+                            <h6>Deskripsi:</h6>
                             <p>{{ object.deskripsi }}</p>
                             <ul class="list-inline">
                                 <li class="list-inline-item">
@@ -81,12 +81,12 @@
                                 <div class="row pb-3">
                                     <div class="col d-grid">
                                          <a href="{{ object.get_add_to_cart_url }}" class="btn btn-success py-2">
-                                            + Add to cart
+                                            + Tambah ke keranjang
                                         </a>
                                     </div>
                                     <div class="col d-grid">
                                          <a href="{{ object.get_remove_from_cart_url }}" class="btn btn-danger py-2">
-                                            + Remove from cart
+                                            + Hapus dari keranjang
                                         </a>
                                     </div>
                                 </div>
