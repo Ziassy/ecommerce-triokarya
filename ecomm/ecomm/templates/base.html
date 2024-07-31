@@ -4,7 +4,7 @@
 <html lang="en">
 
 <head>
-    <title>Women In Tech Commerce</title>
+    <title>Triokarya</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -43,7 +43,7 @@
     <nav class="navbar navbar-expand-lg navbar-light shadow">
         <div class="container d-flex justify-content-between align-items-center">
 
-            <a class="navbar-brand text-success logo h1 align-self-center" href="/">
+            <a id="logo-navbar-brand" class="navbar-brand text-success logo h1 align-self-center" href="/">
                 Triokarya
             </a>
     
@@ -86,7 +86,7 @@
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title">Search Products</h5>
+                                    <h5 class="modal-title">Cari Produk</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
@@ -119,8 +119,8 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="profileDropdown">
                             <a class="dropdown-item" href="{% url 'toko:profile' %}">Profile</a>
-                            <a class="dropdown-item" href="{% url 'toko:address_list' %}">Address</a>
-                            <a class="dropdown-item" href="{% url 'toko:order-history' %}">History Order</a>
+                            <a class="dropdown-item" href="{% url 'toko:address_list' %}">Alamat</a>
+                            <a class="dropdown-item" href="{% url 'toko:order-history' %}">Riwayat Belanja</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a>
                         </div>
