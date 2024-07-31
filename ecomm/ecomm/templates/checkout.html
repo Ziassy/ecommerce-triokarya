@@ -99,7 +99,7 @@
                             {% endfor %}
                             {% if shipping_costs %}
                                 <h3>Biaya Pengiriman</h3>
-                                <div class="form-group">
+                                    <div class="form-group">
                                     {% for cost in shipping_costs %}
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="shipping_option" id="shippingOption{{ forloop.counter }}" value="{{ cost.cost }}">

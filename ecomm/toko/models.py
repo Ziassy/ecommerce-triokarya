@@ -194,6 +194,8 @@ class Order(models.Model):
     payment = models.ForeignKey('Payment', on_delete=models.SET_NULL, blank=True, null=True)
     delivery_method = models.CharField(max_length=2,choices=PILIHAN_PENGIRIMAN,default='PR')
     status = models.CharField(max_length=1, choices=STATUS_CHOICES_PENGIRIMAN, default='P')
+    shipping_cost = models.FloatField(null=True, blank=True)
+    shipping_courier = models.CharField(max_length=20, null=True, blank=True)
 
     def __str__(self):
         return self.user.username
@@ -244,7 +246,6 @@ class Payment(models.Model):
     payment_option = models.CharField(choices=PILIHAN_PEMBAYARAN, max_length=1)
     charge_id = models.CharField(max_length=50)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES_PEMBAYARAN, default='B')
-    shipping_cost = models.FloatField(default=0.0)
 
     def __self__(self):
         return self.user.username

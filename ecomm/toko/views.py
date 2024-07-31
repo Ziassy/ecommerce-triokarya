@@ -369,7 +369,62 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
                             'etd': service['cost'][0]['etd']
                         })
             
-        print(shipping_costs)
+        # Store shipping costs in session
+        self.request.session['shipping_costs'] = shipping_costs
+
+        context = {
+            'form': form,
+            'keranjang': order,
+            'addresses': addresses,
+            'selected_address': selected_address,
+            'shipping_costs': shipping_costs
+        }
+        template_name = 'checkout.html'
+        return render(self.request, template_name, context)
+
+class CheckoutView(LoginRequiredMixin, generic.FormView):
+    def get(self, *args, **kwargs):
+        order = get_object_or_404(Order, user=self.request.user, ordered=False)
+
+        # Handle Insecure direct object reference
+        if order.user != self.request.user:
+            raise PermissionDenied('You are not authorized to access this order.')
+
+        form = CheckoutForm()
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            if order.produk_items.count() == 0:
+                messages.warning(self.request, 'Belum ada belanjaan yang Anda pesan, lanjutkan belanja')
+                return redirect('toko:home-produk-list')
+        except ObjectDoesNotExist:
+            order = {}
+            messages.warning(self.request, 'Belum ada belanjaan yang Anda pesan, lanjutkan belanja')
+            return redirect('toko:home-produk-list')
+
+        # Get the user's addresses
+        addresses = Address.objects.filter(user=self.request.user)
+        selected_address = self.request.session.get('selected_address', None)
+
+        origin = '154'  # ID Kota Asal
+        destination = '78'  # ID Kota Tujuan
+        weight = 1700  # Berat Barang dalam gram
+        couriers = ['jne', 'pos', 'tiki']  # Daftar kurir
+
+        shipping_costs = []
+        for courier in couriers:
+            cost_data = get_shipping_cost(origin, destination, weight, courier)
+            if cost_data['rajaongkir']['status']['code'] == 200:
+                for result in cost_data['rajaongkir']['results']:
+                    for service in result['costs']:
+                        shipping_costs.append({
+                            'courier': result['name'],
+                            'service': service['service'],
+                            'cost': service['cost'][0]['value'],
+                            'etd': service['cost'][0]['etd']
+                        })
+
+        # Store shipping costs in session
+        self.request.session['shipping_costs'] = shipping_costs
 
         context = {
             'form': form,
@@ -385,18 +440,26 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
         form = CheckoutForm(self.request.POST or None)
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
+            shipping_costs = self.request.session.get('shipping_costs', [])  # Retrieve shipping costs from session
+
             if form.is_valid():
                 opsi_pembayaran = form.cleaned_data.get('opsi_pembayaran')
                 opsi_pengiriman = form.cleaned_data.get('opsi_pengiriman')
-                
+                shipping_option = self.request.POST.get('shipping_option')
+
+                if shipping_option:
+                    # Find the selected shipping cost and courier
+                    for cost in shipping_costs:
+                        if str(cost['cost']) == shipping_option:
+                            order.shipping_cost = cost['cost']
+                            order.shipping_courier = cost['courier']
+                            break
                 # Validate opsi_pembayaran to prevent unauthorized payment method selection
                 allowed_payment_methods = ['P', 'C', 'T']  # Add the allowed payment method codes
-                
-            
-                
-                # Parameter Tampering Prevention
+
                 if opsi_pembayaran not in allowed_payment_methods:
                     raise PermissionDenied('Invalid payment method selected')
+
                 selected_address = self.request.session.get('selected_address', None)
                 if selected_address:
                     alamat_pengiriman = AlamatPengiriman(
@@ -413,13 +476,11 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
                     order.alamat_pengiriman = alamat_pengiriman
                     order.delivery_method = opsi_pengiriman
                     order.save()
-                    
-                    
+
                 else:
-                    # Handle case when selected_address is None
                     messages.warning(self.request, 'Alamat pengiriman belum dipilih')
                     return redirect('toko:checkout')
-                
+
                 if opsi_pembayaran == 'P':
                     return redirect('toko:payment', payment_method='paypal')
                 elif opsi_pembayaran == 'T':
@@ -427,7 +488,7 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
                 else:
                     return redirect('toko:payment', payment_method='COD')
             else:
-                print(form.errors)  # Check errors in console for debugging
+                print(form.errors)
                 messages.warning(self.request, 'Gagal checkout')
                 return redirect('toko:checkout')
         except ObjectDoesNotExist:
@@ -441,7 +502,9 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
             order = Order.objects.get(user=self.request.user, ordered=False)
             payment_method = kwargs.get('payment_method', 'paypal')
             
-
+            # Update total price to include shipping cost
+            total_price = order.get_total_harga_order() + (order.shipping_cost or 0)
+            
             if payment_method == 'paypal':
                 paypal_data = {
                     'business': settings.PAYPAL_RECEIVER_EMAIL,
@@ -489,7 +552,7 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
             elif payment_method == 'manual':
                 payment = Payment()
                 payment.user = self.request.user
-                payment.amount = order.get_total_harga_order()
+                payment.amount = total_price
                 payment.payment_option = 'T'
                 payment.charge_id = f'{order.id}-{timezone.now()}'
                 payment.timestamp = timezone.now()
