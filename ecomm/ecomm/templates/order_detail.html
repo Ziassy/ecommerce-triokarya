@@ -48,8 +48,14 @@
       <tr>
         <td>{{ item.produk_item.nama_produk }}</td>
         <td>{{ item.quantity }}</td>
-        <td><span class="text-danger"><del>{{ item.get_total_hemat_item|currency_idr }}</del></span></td>
-        <td>{{ item.get_total_harga_diskon_item|currency_idr}}</td>
+        <td>
+        {% if item.produk_item.harga_diskon %}
+        <span class="text-danger"><del>{{ item.get_total_harga_item|currency_idr }}</del></span>
+        {% else %}
+        {{ 0|currency_idr }}
+        {% endif %}
+        </td>
+        <td>{{ item.get_total_harga_setelah_diskon|currency_idr}}</td>
       </tr>
       {% endfor %}
     </tbody>

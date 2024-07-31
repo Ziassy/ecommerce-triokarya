@@ -175,6 +175,12 @@ class OrderProdukItem(models.Model):
         if self.produk_item.harga_diskon:
             return self.get_total_hemat_item()
         return 0
+    def get_total_harga_setelah_diskon(self):
+        if self.produk_item.harga_diskon is not None:
+            return self.quantity * self.produk_item.harga_diskon
+        if self.produk_item.harga is not None:
+            return self.quantity * self.produk_item.harga
+        return 0
 
 
 
