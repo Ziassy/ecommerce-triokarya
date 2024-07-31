@@ -17,6 +17,8 @@ from django.views import View
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.paginator import Paginator
 from django.contrib.admin.views.decorators import staff_member_required
+from .utils import get_shipping_cost  # Import fungsi API
+
 
 
 from .forms import CheckoutForm, ContactForm, ReviewForm, UserProfileForm, AddressForm
@@ -349,11 +351,32 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
         addresses = Address.objects.filter(user=self.request.user)
         selected_address = self.request.session.get('selected_address', None)
 
+        origin = '154'  # ID Kota Asal
+        destination = '78'  # ID Kota Tujuan
+        weight = 1700  # Berat Barang dalam gram
+        couriers = ['jne', 'pos', 'tiki']  # Daftar kurir
+
+        shipping_costs = []
+        for courier in couriers:
+            cost_data = get_shipping_cost(origin, destination, weight, courier)
+            if cost_data['rajaongkir']['status']['code'] == 200:
+                for result in cost_data['rajaongkir']['results']:
+                    for service in result['costs']:
+                        shipping_costs.append({
+                            'courier': result['name'],
+                            'service': service['service'],
+                            'cost': service['cost'][0]['value'],
+                            'etd': service['cost'][0]['etd']
+                        })
+            
+        print(shipping_costs)
+
         context = {
             'form': form,
             'keranjang': order,
             'addresses': addresses,
             'selected_address': selected_address,
+            'shipping_costs': shipping_costs
         }
         template_name = 'checkout.html'
         return render(self.request, template_name, context)
@@ -368,6 +391,8 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
                 
                 # Validate opsi_pembayaran to prevent unauthorized payment method selection
                 allowed_payment_methods = ['P', 'C', 'T']  # Add the allowed payment method codes
+                
+            
                 
                 # Parameter Tampering Prevention
                 if opsi_pembayaran not in allowed_payment_methods:
@@ -388,6 +413,8 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
                     order.alamat_pengiriman = alamat_pengiriman
                     order.delivery_method = opsi_pengiriman
                     order.save()
+                    
+                    
                 else:
                     # Handle case when selected_address is None
                     messages.warning(self.request, 'Alamat pengiriman belum dipilih')
@@ -413,6 +440,7 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
             payment_method = kwargs.get('payment_method', 'paypal')
+            
 
             if payment_method == 'paypal':
                 paypal_data = {
@@ -489,8 +517,6 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
 
         except ObjectDoesNotExist:
             return redirect('toko:checkout')
-
-
 
 
 @csrf_exempt

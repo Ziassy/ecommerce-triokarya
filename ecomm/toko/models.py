@@ -198,21 +198,27 @@ class Order(models.Model):
     def __str__(self):
         return self.user.username
 
-     
     def get_total_harga_order(self):
         total = 0
         for order_produk_item in self.produk_items.all():
             total += order_produk_item.get_total_item_keseluruan()
         return total
-    
+
     def get_total_diskon_order(self):
         total_diskon = 0
         for order_produk_item in self.produk_items.all():
             total_diskon += order_produk_item.get_total_hemat_keseluruhan()
         return total_diskon
-    
+
     def get_order_status_display(self):
         return dict(STATUS_CHOICES_PENGIRIMAN).get(self.status, 'Unknown')
+
+    def get_total_weight(self):
+        total_weight = 0
+        for order_produk_item in self.produk_items.all():
+            total_weight += order_produk_item.produk_item.berat * order_produk_item.quantity
+        return total_weight
+
     
 
 class AlamatPengiriman(models.Model):
@@ -238,6 +244,7 @@ class Payment(models.Model):
     payment_option = models.CharField(choices=PILIHAN_PEMBAYARAN, max_length=1)
     charge_id = models.CharField(max_length=50)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES_PEMBAYARAN, default='B')
+    shipping_cost = models.FloatField(default=0.0)
 
     def __self__(self):
         return self.user.username
