@@ -224,7 +224,8 @@ class Order(models.Model):
     def get_total_harga_order_with_shipping_cost(self):
         total = 0
         for order_produk_item in self.produk_items.all():
-            total += order_produk_item.get_total_harga_order + order_produk_item.shipping_cost
+            total += order_produk_item.get_total_item_keseluruan()  
+        total += self.shipping_cost if self.shipping_cost else 0 
         return total
 
     

@@ -17,7 +17,7 @@
       <p>{{ order.payment.get_payment_option_display }}</p>
       <h3>Metode Pengiriman</h3>
       <p>{{ order.get_delivery_method_display }}</p>
-      <p>Total: {{ order.payment.amount|currency_idr }}</p>
+      <p><b>Total: {{ order.payment.amount|currency_idr }}</b></p>
     </div>
     <div class="col-md-2">
       <h5>Status Pembayaran</h5>

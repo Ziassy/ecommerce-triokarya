@@ -30,7 +30,7 @@
         {% if request.user.is_staff %}
         <td>{{ order.user }}</td>
         {%endif%}
-        <td>{{ order.get_total_harga_order|currency_idr }}</td>
+        <td>{{ order.get_total_harga_order_with_shipping_cost|currency_idr }}</td>
         <td>{{ order.get_order_status_display }}</td>
         <td>
           <p>
