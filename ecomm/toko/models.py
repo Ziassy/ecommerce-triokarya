@@ -69,7 +69,7 @@ class Provinsi(models.Model):
 
 class Kabupaten(models.Model):
     id = models.CharField(primary_key=True, max_length=10)
-    id_provinsi = models.CharField(max_length=10)
+    id_provinsi = models.ForeignKey(Provinsi, on_delete=models.CASCADE, related_name='kabupatens')
     name = models.CharField(max_length=100)
 
     def __str__(self):
@@ -77,7 +77,7 @@ class Kabupaten(models.Model):
 
 class Kecamatan(models.Model):
     id = models.CharField(primary_key=True, max_length=10)
-    id_kabupaten = models.CharField(max_length=10)
+    id_kabupaten = models.ForeignKey(Kabupaten, on_delete=models.CASCADE, related_name='kecamatans')
     name = models.CharField(max_length=100)
 
     def __str__(self):
@@ -85,7 +85,7 @@ class Kecamatan(models.Model):
 
 class Kelurahan(models.Model):
     id = models.CharField(primary_key=True, max_length=10)
-    id_kecamatan = models.CharField(max_length=10)
+    id_kecamatan = models.ForeignKey(Kecamatan, on_delete=models.CASCADE, related_name='kelurahans')
     name = models.CharField(max_length=100)
 
     def __str__(self):

@@ -74,12 +74,11 @@
         </div>
         {% if keranjang.get_total_harga_order %}
         <div class="shopping-cart-footer">
-            <div class="column text-lg">Subtotal: <span class="text-medium">{{ keranjang.get_total_harga_order|currency_idr }}</span></div>
+            <div class="column text-lg">Total: <span class="text-medium">{{ keranjang.get_total_harga_order|currency_idr }}</span></div>
         </div>
         <div class="shopping-cart-footer">
             <div class="column">
-                <a class="btn btn-outline-secondary" href="/carousel"><i class="icon-arrow-left"></i>&nbsp;Back
-                    to Shopping</a>
+                <a class="btn btn-outline-secondary" href="/carousel"><i class="icon-arrow-left"></i>&nbsp;Kembali Belanja</a>
             </div>
             <div class="column">
                 <a class="btn btn-success" href="{% url 'toko:checkout' %}">Checkout</a>
