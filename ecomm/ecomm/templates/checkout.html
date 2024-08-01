@@ -162,9 +162,22 @@
                             <strong class="text-danger">-{{ keranjang.get_total_diskon_order |currency_idr}}</strong>
                         </li>
 
+                        <!-- Total Harga -->
                         <li class="list-group-item d-flex justify-content-between">
-                            <span>Total (IDR)</span>
-                            <strong class="text-success">{{ keranjang.get_total_harga_order |currency_idr}}</strong>
+                            <span>Total Produk (IDR)</span>
+                            <strong class="text-success total-harga">{{ keranjang.get_total_harga_order |currency_idr}}</strong>
+                        </li>
+
+                        <!-- Biaya Pengiriman -->
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Biaya Pengiriman (IDR)</span>
+                            <strong class="text-success" id="shipping-cost">0</strong>
+                        </li>
+
+                        <!-- Total Akhir -->
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Total Payment (IDR)</span>
+                            <strong class="text-success" id="final-total">{{ keranjang.get_total_harga_order |currency_idr}}</strong>
                         </li>
                     </ul>
                     <!-- Cart -->
