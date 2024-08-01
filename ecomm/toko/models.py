@@ -220,6 +220,12 @@ class Order(models.Model):
         for order_produk_item in self.produk_items.all():
             total_weight += order_produk_item.produk_item.berat * order_produk_item.quantity
         return total_weight
+    
+    def get_total_harga_order_with_shipping_cost(self):
+        total = 0
+        for order_produk_item in self.produk_items.all():
+            total += order_produk_item.get_total_harga_order + order_produk_item.shipping_cost
+        return total
 
     
 
