@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
 {% load cart_template_tags %}
 
@@ -13,8 +14,7 @@
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#alamatModal">Pilih Alamat</button>
 
         <!-- Modal -->
-        <div class="modal fade bd-example-modal-lg" id="alamatModal" tabindex="-1" aria-labelledby="alamatModalLabel"
-            aria-hidden="true">
+        <div class="modal fade bd-example-modal-lg" id="alamatModal" tabindex="-1" aria-labelledby="alamatModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -88,28 +88,29 @@
                     <!-- Card -->
                     <div class="card p-4">
                         <!-- Delivery Method -->
-                        <div class="my-3">
+                        <div class="my-3"> 
                             <h5>Pilih Metode Pengiriman:</h5>
                             {% for value, name in form.opsi_pengiriman.field.choices %}
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="opsi_pengiriman" id="{{ value }}"
-                                    value="{{ value }}" required />
+                                <input class="form-check-input opsi_pengiriman_check" type="radio" name="opsi_pengiriman" id="{{ value }}" value="{{ value }}" required />
                                 <label class="form-check-label" for="{{ value }}">{{ name }}</label>
                             </div>
                             {% endfor %}
-                            {% if shipping_costs %}
-                                <h3>Biaya Pengiriman</h3>
-                                    <div class="form-group">
-                                    {% for cost in shipping_costs %}
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="shipping_option" id="shippingOption{{ forloop.counter }}" value="{{ cost.cost }}">
-                                            <label class="form-check-label" for="shippingOption{{ forloop.counter }}">
-                                                {{ cost.courier }} - Service: {{ cost.service }} - Biaya: {{ cost.cost|currency_idr  }} - Estimasi: {{ cost.etd }} hari
-                                            </label>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
+                            <div id="shipping-costs-section" style="display: none;">
+                                {% if shipping_costs %}
+                                    <h3>Biaya Pengiriman</h3>
+                                        <div class="form-group">
+                                        {% for cost in shipping_costs %}
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="shipping_option" id="shippingOption{{ forloop.counter }}" value="{{ cost.cost }}">
+                                                <label class="form-check-label" for="shippingOption{{ forloop.counter }}">
+                                                    {{ cost.courier }} - Service: {{ cost.service }} - Biaya: {{ cost.cost|currency_idr  }} - Estimasi: {{ cost.etd }} hari
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
                         </div>
 
                         <hr />
@@ -119,15 +120,13 @@
                             <h5>Pilih Metode Pembayaran:</h5>
                             {% for value, name in form.opsi_pembayaran.field.choices %}
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="opsi_pembayaran" id="{{ value }}"
-                                    value="{{ value }}" required />
+                                <input class="form-check-input" type="radio" name="opsi_pembayaran" id="{{ value }}" value="{{ value }}" required />
                                 <label class="form-check-label" for="{{ value }}">{{ name }}</label>
                             </div>
                             {% endfor %}
                         </div>
                         <hr class="mb-4" />
-                        <button class="btn btn-primary" type="submit"
-                            {% if keranjang.produk_items.count == 0 %}disabled{% endif %}>Lanjutkan checkout</button>
+                        <button class="btn btn-primary" type="submit" {% if keranjang.produk_items.count == 0 %}disabled{% endif %}>Lanjutkan checkout</button>
                     </div>
                     <!-- /.Card -->
                 </div>
@@ -177,4 +176,9 @@
     </div>
 </main>
 <!-- Main layout -->
+
+{% block extra_js %}
+<script src="{% static 'js/metodePengiriman.js' %}"></script>
+{% endblock %}
+
 {% endblock content %}

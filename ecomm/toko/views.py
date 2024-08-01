@@ -447,13 +447,16 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
                 opsi_pengiriman = form.cleaned_data.get('opsi_pengiriman')
                 shipping_option = self.request.POST.get('shipping_option')
 
-                if shipping_option:
+                if opsi_pengiriman == 'EX' and shipping_option:
                     # Find the selected shipping cost and courier
                     for cost in shipping_costs:
                         if str(cost['cost']) == shipping_option:
                             order.shipping_cost = cost['cost']
                             order.shipping_courier = cost['courier']
                             break
+                elif opsi_pengiriman == 'PR':
+                    order.shipping_cost = 0
+                    order.shipping_courier = 'Kurir Pribadi'
                 # Validate opsi_pembayaran to prevent unauthorized payment method selection
                 allowed_payment_methods = ['P', 'C', 'T']  # Add the allowed payment method codes
 
