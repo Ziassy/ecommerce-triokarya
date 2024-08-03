@@ -16,8 +16,8 @@
       <h3>Metode Pembayaran</h3>
       <p>{{ order.payment.get_payment_option_display }}</p>
       <h3>Metode Pengiriman</h3>
-      <p>{{ order.get_delivery_method_display }}</p>
-      <p><b>Total: {{ order.payment.amount|currency_idr }}</b></p>
+      <p>{{ order.get_delivery_method_display }} - {{ order.shipping_courier }}</p>
+      <p>Nomor Resi : </b></p>
     </div>
     <div class="col-md-2">
       <h5>Status Pembayaran</h5>
@@ -55,9 +55,19 @@
         {{ 0|currency_idr }}
         {% endif %}
         </td>
-        <td>{{ item.get_total_harga_setelah_diskon|currency_idr}}</td>
+        <td>{{ item.get_total_harga_setelah_diskon|currency_idr }}</td>
       </tr>
       {% endfor %}
+      {% if order.shipping_cost%}
+      <tr>
+        <td colspan="3"><b>Ongkos Pengiriman</b></td>
+        <td><b>{{ order.shipping_cost|currency_idr }}</b></td>
+      </tr>
+      <tr>
+        <td colspan="3"><b>Total Pembayaran</b></td>
+        <td><b>{{ order.payment.amount|currency_idr }}</b></td>
+      </tr>
+      {% endif %}
     </tbody>
   </table>
   {% if order.payment.status == 'S' %}
@@ -68,12 +78,12 @@
         {% if order.status == 'P' %}
         <form action="{% url 'toko:update-order-status' order.id %}" method="post">
           {% csrf_token %}
-          <button type="submit" class="btn btn-success">Kirim</button>
+          <button type="submit" class="btn btn-success">Dikirim</button>
         </form>
         {% elif order.status == 'S' %}
         <form action="{% url 'toko:update-order-status' order.id %}" method="post">
           {% csrf_token %}
-          <button type="submit" class="btn btn-info">Terima</button>
+          <button type="submit" class="btn btn-info">Pesanan Diterima</button>
         </form>
         {% endif %}
       </div>
@@ -81,16 +91,24 @@
     {% endif %}
   {% endif %}  
 
-  {% if order.payment.status == 'B' %}
+  {% if order.payment.status == 'B' and order.payment.payment_option == 'C' %}
   <div class="mt-5 text-center">
-      <a href="https://wa.me/6285819581914?text=Hallo%2C%20saya%20{{ user.username|urlencode }}%20sudah%20melakukan%20transfer%20pada%20website%20I-merce.%20Berikut%20Pesanan%20saya%3A%0A%0AID%20pesanan%3A%20{{ order.id }}%0ABarang%3A%0A{% for item in order.produk_items.all %}- {{ item.produk_item.nama_produk|urlencode }}%20(%20Jumlah%20barang%3A%20{{ item.quantity }}%20)%0A{% endfor %}%0ATotal%20harga%3A%20Rp.%20{{ order.get_total_harga_order|currency_idr }}%0A%0ATerima%20Kasih."
+      <a href="https://wa.me/6285156912483?text=*[Payment%20Cash%20on%20Delivery%20(COD)]*%0A%0AHallo%2C%20saya%20{{ user.username|urlencode }}%20sudah%20melakukan%20pemesanan%20pada%20website%20Triokarya%20dengan%20pembayaran%20COD.%20Berikut%20Pesanan%20saya%3A%0A%0AID%20pesanan%3A%20{{ order.id }}%0ABarang%3A%0A{% for item in order.produk_items.all %}- {{ item.produk_item.nama_produk|urlencode }}%20(%20Jumlah%20barang%3A%20{{ item.quantity }}%20)%0A{% endfor %}%0ATotal%20harga%3A%20Rp.%20{{ order.payment.amount|currency_idr }}%0A%0ATerima%20Kasih."
         class="btn btn-success profile-button">
-          <i class="fa fa-whatsapp"></i> Konfirmasi Pembayaran
+        <i class="fa fa-whatsapp"></i> Konfirmasi Pesanan
+      </a>
+
+  </div>
+  {% elif order.payment.status == 'B' and order.payment.payment_option == 'T' %}
+  <div class="mt-5 text-center">
+      <a href="https://wa.me/6285156912483?text=*[Payment%20Transfer]*%0A%0AHallo%2C%20saya%20{{ user.username|urlencode }}%20sudah%20melakukan%20pemesanan%20pada%20website%20Triokarya%20dengan%20pembayaran%20manual%20Transfer.%20Berikut%20Pesanan%20saya%3A%0A%0AID%20pesanan%3A%20{{ order.id }}%0ABarang%3A%0A{% for item in order.produk_items.all %}- {{ item.produk_item.nama_produk|urlencode }}%20(%20Jumlah%20barang%3A%20{{ item.quantity }}%20)%0A{% endfor %}%0ATotal%20harga%3A%20Rp.%20{{ order.payment.amount|currency_idr }}%0A%0ATerima%20Kasih."
+        class="btn btn-success profile-button">
+        <i class="fa fa-whatsapp"></i> Konfirmasi Pesanan
       </a>
   </div>
   {% elif order.payment.status == 'S' %}
       <div class="mt-5 text-center">
-      <a href="https://wa.me/6285819581914"
+      <a href="https://wa.me/6285156912483"
         class="btn btn-success profile-button">
           <i class="fa fa-whatsapp"></i> Hubungi Admin
       </a>

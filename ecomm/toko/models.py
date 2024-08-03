@@ -36,9 +36,9 @@ PILIHAN_PENGIRIMAN = (
 )
 
 STATUS_CHOICES_PENGIRIMAN = (
-    ('P', 'Pending'),
-    ('S', 'Shipped'),
-    ('D', 'Delivered'),
+    ('P', 'Dikemas'),
+    ('S', 'Dikirim (Kurir Internal)'),
+    ('D', 'Pesanan Sampai'),
 )
 
 STATUS_CHOICES_PEMBAYARAN = (
