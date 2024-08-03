@@ -37,7 +37,7 @@ PILIHAN_PENGIRIMAN = (
 
 STATUS_CHOICES_PENGIRIMAN = (
     ('P', 'Dikemas'),
-    ('S', 'Dikirim (Kurir Internal)'),
+    ('S', 'Dikirim (Kurir)'),
     ('D', 'Pesanan Sampai'),
 )
 
@@ -196,6 +196,7 @@ class Order(models.Model):
     status = models.CharField(max_length=1, choices=STATUS_CHOICES_PENGIRIMAN, default='P')
     shipping_cost = models.FloatField(null=True, blank=True)
     shipping_courier = models.CharField(max_length=20, null=True, blank=True)
+    nomor_resi = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return self.user.username

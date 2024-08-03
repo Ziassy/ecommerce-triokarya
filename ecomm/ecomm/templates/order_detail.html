@@ -17,7 +17,7 @@
       <p>{{ order.payment.get_payment_option_display }}</p>
       <h3>Metode Pengiriman</h3>
       <p>{{ order.get_delivery_method_display }} - {{ order.shipping_courier }}</p>
-      <p>Nomor Resi : </b></p>
+      <p>Nomor Resi : {{ order.nomor_resi }}</b></p>
     </div>
     <div class="col-md-2">
       <h5>Status Pembayaran</h5>
@@ -70,7 +70,7 @@
       {% endif %}
     </tbody>
   </table>
-  {% if order.payment.status == 'S' %}
+  {% if order.payment.status == 'S' and order.delivery_method == 'PR'%}
     {% if request.user.is_staff %}
     <div class="row mt-3 mb-5">
       <div class="col">
@@ -89,7 +89,33 @@
       </div>
     </div>
     {% endif %}
-  {% endif %}  
+  {% elif order.payment.status == 'S' and order.delivery_method == 'EX' %}
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#input_resi_modal">Input Nomor Resi</button>
+
+    <!-- Modal for inputting nomor resi -->
+    <div class="modal fade" id="input_resi_modal" tabindex="-1" aria-labelledby="inputResiModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="inputResiModalLabel">Silahkan Input Nomor Resi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="{% url 'toko:order-detail' order.pk %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <input type="text" name="nomor_resi" class="form-control" placeholder="Nomor Resi...">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- End Modal for inputting nomor resi -->
+  {% endif %}
+
 
   {% if order.payment.status == 'B' and order.payment.payment_option == 'C' %}
   <div class="mt-5 text-center">

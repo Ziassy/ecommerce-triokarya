@@ -641,6 +641,15 @@ class OrderDetailView(UserPassesTestMixin, View):
             'user': request.user,  # Mengirimkan data pengguna ke template
         }
         return render(request, 'order_detail.html', context)
+    
+    def post(self, request, pk, *args, **kwargs):
+        order = get_object_or_404(Order, pk=pk)
+        nomor_resi = request.POST.get('nomor_resi')
+        if nomor_resi:
+            order.nomor_resi = nomor_resi
+            order.status = 'S'
+            order.save()
+        return redirect('toko:order-detail', pk=pk)
 
     def is_admin_or_owner(self):
         order = get_object_or_404(Order, pk=self.kwargs['pk'])
