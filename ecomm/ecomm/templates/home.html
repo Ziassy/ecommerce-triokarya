@@ -88,22 +88,22 @@
             <div class="col-12 col-md-3 p-5 mt-3">
                 <a href="#"><img src="{% static '/img/category_img_01(1).jpg' %}" class="rounded-circle img-fluid border"></a>
                 <h5 class="text-center mt-3 mb-3">HP</h5>
-                <p class="text-center"><a class="btn btn-success" href='/carousel'>Go Shop</a></p>
+                <p class="text-center"><a class="btn btn-success" href="{% url 'toko:produk-list' %}?category=HP">Go Shop</a></p>
             </div>
             <div class="col-12 col-md-3 p-5 mt-3">
                 <a href="#"><img src="{% static '/img/category_img_02(1).jpg' %}" class="rounded-circle img-fluid border"></a>
                 <h2 class="h5 text-center mt-3 mb-3">Cannon</h2>
-                <p class="text-center"><a class="btn btn-success" href='/carousel'>Go Shop</a></p>
+                <p class="text-center"><a class="btn btn-success" href="{% url 'toko:produk-list' %}?category=Cannon">Go Shop</a></p>
             </div>
             <div class="col-12 col-md-3 p-5 mt-3">
                 <a href="#"><img src="{% static '/img/category_img_03(1).jpg' %}" class="rounded-circle img-fluid border"></a>
                 <h2 class="h5 text-center mt-3 mb-3">Epson</h2>
-                <p class="text-center"><a class="btn btn-success" href='/carousel'>Go Shop</a></p>
+                <p class="text-center"><a class="btn btn-success" href="{% url 'toko:produk-list' %}?category=Epson">Go Shop</a></p>
             </div>
             <div class="col-12 col-md-3 p-5 mt-3">
                 <a href="#"><img src="{% static '/img/category_img_04.jpg' %}" class="rounded-circle img-fluid border"></a>
                 <h5 class="text-center mt-3 mb-3">Brother</h5>
-                <p class="text-center"><a class="btn btn-success" href='/carousel'>Go Shop</a></p>
+                <p class="text-center"><a class="btn btn-success" href="{% url 'toko:produk-list' %}?category=Brother">Go Shop</a></p>
             </div>
         </div>
     </section>
