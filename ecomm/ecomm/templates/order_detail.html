@@ -71,59 +71,58 @@
       {% endif %}
     </tbody>
   </table>
-  {% if request.user.is_staff %}
-    {% if order.payment.status == 'S' and order.delivery_method == 'PR'%}
-      <div class="row mt-3 mb-5">
-        <div class="col">
-          <!-- Button untuk mengubah status -->
-          {% if order.status == 'P' %}
-          <form action="{% url 'toko:update-order-status' order.id %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-success">Dikirim</button>
-          </form>
-          {% elif order.status == 'S' %}
-          <form action="{% url 'toko:update-order-status' order.id %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-info">Pesanan Diterima</button>
-          </form>
-          {% endif %}
-        </div>
-      </div>
-
-    {% elif order.payment.status == 'S' and order.delivery_method == 'EX' %}
-    {% if order.status == 'P' %}
-      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#input_resi_modal">Input Nomor Resi</button>
-
-      <!-- Modal for inputting nomor resi -->
-      <div class="modal fade" id="input_resi_modal" tabindex="-1" aria-labelledby="inputResiModalLabel" aria-hidden="true">
-          <div class="modal-dialog">
-              <div class="modal-content">
-                  <div class="modal-header">
-                      <h5 class="modal-title" id="inputResiModalLabel">Silahkan Input Nomor Resi</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <form method="post" action="{% url 'toko:order-detail' order.pk %}">
-                      {% csrf_token %}
-                      <div class="modal-body">
-                          <input type="text" name="nomor_resi" class="form-control" placeholder="Nomor Resi...">
-                      </div>
-                      <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                          <button type="submit" class="btn btn-success">Submit</button>
-                      </div>
-                  </form>
-              </div>
-          </div>
-      </div>
-      <!-- End Modal for inputting nomor resi -->
-     
-      {%elif order.status == 'S'%}
+  
+  {% if order.payment.status == 'S' and order.delivery_method == 'PR'%}
+    <div class="row mt-3 mb-5">
+      <div class="col">
+        <!-- Button untuk mengubah status -->
+        {% if order.status == 'P' and request.user.is_staff %}
+        <form action="{% url 'toko:update-order-status' order.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-success">Dikirim</button>
+        </form>
+        {% elif order.status == 'S' %}
         <form action="{% url 'toko:update-order-status' order.id %}" method="post">
           {% csrf_token %}
           <button type="submit" class="btn btn-info">Pesanan Diterima</button>
         </form>
-       {%endif%} 
-    {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+  {% elif order.payment.status == 'S' and order.delivery_method == 'EX' %}
+  {% if order.status == 'P' and request.user.is_staff%}
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#input_resi_modal">Input Nomor Resi</button>
+
+    <!-- Modal for inputting nomor resi -->
+    <div class="modal fade" id="input_resi_modal" tabindex="-1" aria-labelledby="inputResiModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="inputResiModalLabel">Silahkan Input Nomor Resi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="{% url 'toko:order-detail' order.pk %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <input type="text" name="nomor_resi" class="form-control" placeholder="Nomor Resi...">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- End Modal for inputting nomor resi -->
+    
+    {%elif order.status == 'S'%}
+      <form action="{% url 'toko:update-order-status' order.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-info">Pesanan Diterima</button>
+      </form>
+      {%endif%} 
   {% endif %}
 
 
