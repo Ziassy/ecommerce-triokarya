@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.views import View
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.paginator import Paginator
+from datetime import timedelta
 from django.contrib.admin.views.decorators import staff_member_required
 from .utils import get_shipping_cost  # Import fungsi API
 
@@ -504,6 +505,9 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
             payment_method = kwargs.get('payment_method', 'paypal')
+
+            # Calculate due time
+            due_time = order.tanggal_order + timedelta(hours=24)
             
             # Update total price to include shipping cost
             total_price = order.get_total_harga_order() + (order.shipping_cost or 0)
@@ -526,6 +530,7 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
                     'order': order,
                     'is_paypal': True,
                     'payment_method': payment_method,
+                    'due_time': due_time,
                 }
                 return render(self.request, template_name, context)
 
@@ -549,6 +554,7 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
                 context = {
                     'order': order,
                     'payment_method': payment_method,
+                    'due_time': due_time,
                 }
                 return render(self.request, template_name, context)
 
@@ -572,12 +578,14 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
                 context = {
                     'order': order,
                     'payment_method': payment_method,
+                    'due_time': due_time,
                 }
                 return render(self.request, template_name, context)
 
             context = {
                 'order': order,
                 'payment_method': payment_method,
+                'due_time': due_time,
             }
             return render(self.request, template_name, context)
 

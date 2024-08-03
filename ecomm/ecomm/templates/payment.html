@@ -7,20 +7,107 @@
   <div class="d-flex justify-content-center">
     <div class="row justify-content-center">
       <div class="col pt-5 pb-5">
+        {% if is_paypal %}
         <p>Total belanjaan kamu : <strong>{{ order.get_total_harga_order_with_shipping_cost|currency_idr }}</strong></p>
         <br />
-        {% if is_paypal %}
         <div>{{ paypalform.render }}</div>
         {% else %}
-        <div>Pembayaran COD atau Transfer Manual akan dilakukan sesuai instruksi berikut:</div>
         <ul>
           {% if payment_method == 'COD' %}
-          <li>COD: Pembayaran akan dilakukan saat barang diterima.</li>
-          <a href="{% url 'toko:produk-list' %}" class="btn btn-primary mt-3">Kembali ke Home</a>
+            <div class="container information-payment">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <a href="{% url 'toko:order-history' %}" class="btn btn-light">&larr; Back</a>
+                <h4 class="payment-header">Payment</h4>
+                <div class="text-muted"></div>
+              </div>
+
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <div>Total Payment</div>
+                    <div class="total-payment text-danger"><b>{{ order.get_total_harga_order_with_shipping_cost|currency_idr }}</b></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="d-flex align-items-center mb-2">
+                    <img src="https://via.placeholder.com/24x24.png?text=COD" alt="COD logo" class="me-2">
+                    <div>COD (Cash On Delivery)</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="instruction">
+                    <ol>
+                      <h5 class="alert-heading">Instruksi Pembayaran COD:</h5>
+                      <li>Pastikan Anda telah memasukkan alamat pengiriman dengan benar.</li>
+                      <li>Kurir akan menghubungi Anda melalui nomor telepon yang terdaftar untuk konfirmasi pengiriman.</l>
+                      <li>Siapkan uang tunai yang sesuai dengan total pembayaran yang tertera pada invoice.</li>
+                      <li>Berikan uang tunai kepada kurir saat barang diterima.</li>
+                      <li>Kurir akan memberikan tanda terima setelah pembayaran dilakukan.</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+
+              <a href="{% url 'toko:order-history' %}" class="btn btn-danger btn-lg w-100">Lihat pesanan.</a>
+            </div>
           {% elif payment_method == 'manual' %}
-          <li>Transfer Manual: Silakan transfer ke rekening berikut dan konfirmasikan pembayaran Anda.</li>
-          <li>Nomor Rekening: 123456789 (Bank ABC)</li>
-          <a href="{% url 'toko:produk-list' %}" class="btn btn-primary mt-3">Kembali ke Home</a>
+            <div class="container information-payment" style="width:500px">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <a href="{% url 'toko:order-history' %}" class="btn btn-light">&larr; Back</a>
+                <h4 class="payment-header">Payment</h4>
+                <div class="text-muted"></div>
+              </div>
+
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <div>Total Payment</div>
+                    <div class="total-payment text-danger"><b>{{ order.get_total_harga_order_with_shipping_cost|currency_idr }}</b></div>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <div>Payment Within</div>
+                    <div class="due-time">Due on {{ due_time|date:"d M Y, H:i" }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="d-flex align-items-center mb-2">
+                    <img src="https://via.placeholder.com/24x24.png?text=BCA" alt="BCA logo" class="me-2">
+                    <div>Bank BCA</div>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <div>Account Number</div>
+                    <div class="text-danger">5265056668</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="instruction">
+                    <ol>
+                      <li>Choose <b>m-Transfer &gt; Transfer to BCA Account</b>.</li>
+                      <li>Input <b>Account Number 5265056668</b> and choose <b>Send</b>.</li>
+                      <li>Check the data on screen. Ensure that Merchant is <b>RAMADHANI ASRI</b>, Total amount is correct. If
+                        correct, choose <b>Yes</b>.</li>
+                      <li>Input your m-BCA PIN and click <b>OK</b>.</li>
+                      <li>If "Transaction is Failed. Payment amount exceeds the daily limit" is displayed, please retry the
+                        transaction using <b>KlikBCA (iBanking) or ATM</b>.</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+
+              <a href="{% url 'toko:order-history' %}" class="btn btn-danger btn-lg w-100">Lihat pesanan.</a>
+            </div>
           {% endif %}
         </ul>
         {% endif %}

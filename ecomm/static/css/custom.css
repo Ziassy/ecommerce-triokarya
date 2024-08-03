@@ -26,3 +26,20 @@ Custom Css
 .rating input[type="radio"]:checked+label i {
   color: #ffc107 !important;
 }
+
+/* payment  */
+.payment-header {
+  font-weight: bold;
+}
+
+.due-time {
+  color: red;
+}
+
+.instruction {
+  font-size: 14px;
+}
+
+.container .information-payment {
+  width: 500px !important;
+}
