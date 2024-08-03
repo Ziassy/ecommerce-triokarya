@@ -23,18 +23,18 @@ def signup(request):
         password=request.POST['pass1']
         confirm_password=request.POST['pass2']
         if password!=confirm_password:
-            messages.warning(request,"Passwords do not match. Please try again.")
+            messages.warning(request,"Konfirmasi password tidak sesuai.")
             return render(request,'account/signup.html') 
         
         # Password validation
         if len(password) < 5 or not re.search('\d', password) or not re.search('[!@#$%^&*]', password):
-            messages.error(request, "Password must be at least 5 characters and contain at least one number and one special character (!@#$%^&*)")
+            messages.error(request, "Kata sandi harus terdiri dari setidaknya 5 karakter dan mengandung setidaknya satu angka dan satu karakter khusus (!@#$%^&*)")
             return render(request, 'account/signup.html')
                           
         try:
             if User.objects.get(email=email) or User.objects.get(username=username):
                 # return HttpResponse("email and username already exist")
-                messages.error(request,"Email or Username already exists. Please choose a different email or username")
+                messages.error(request,"Email atau Nama Pengguna sudah ada. Silakan pilih email atau nama pengguna yang berbeda.")
                 return render(request,'account/signup.html')
         except Exception as identifier:
             pass
@@ -59,7 +59,7 @@ def handlelogin(request):
             return redirect('/')
 
         else:
-            messages.error(request,"Invalid Credentials")
+            messages.error(request,"Username/Password salah.")
             return redirect('/auth/login')
 
     return render(request,'account/login.html')   

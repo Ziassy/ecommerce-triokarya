@@ -6,6 +6,7 @@
   <meta charset="UTF-8">
   <title>Sign Up</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="{% static '/css/style.css' %}">
   <link href="{% static '/assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
   <link href="{% static '/assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
@@ -20,7 +21,7 @@
   </div>
   <div class="wrapper">
     <div class="inner-warpper text-center">
-      <h3 class="title">Please fill in this form to create your account</h3>
+      <h3 class="title">Silahkan isi form berikut untuk registrasi</h3>
       {% for message in messages %}
   
       <div class="alert alert-{{message.tags}} alert-dismissible fade show " role="alert" style="color: red;"> 
@@ -43,24 +44,27 @@
           <span class="lighting"></span>
         </div>
         <div class="input-group">
-          <label class="palceholder" for="pass1">Password</label>
-          <input class="form-control" name="pass1" id="upass1erPassword" type="password" placeholder="" required />
-          <span class="lighting"></span> 
+            <label class="palceholder" for="pass1">Password</label>
+            <input class="form-control" name="pass1" id="pass1" type="password" placeholder="" required />
+            <span class="lighting"></span>
+            <span class="input-group-text">
+                <i class="fa fa-eye" id="togglePass1" style="cursor: pointer;" onclick="togglePasswordVisibility('pass1', 'togglePass1')"></i>
+            </span>
         </div>
         <div class="input-group">
-          <label class="palceholder" for="pass2">Confirm Password</label>
-          <input class="form-control" name="pass2" id="pass2" type="password" placeholder="" required />
-          <span class="lighting"></span> 
+            <label class="palceholder" for="pass2">Confirm Password</label>
+            <input class="form-control" name="pass2" id="pass2" type="password" placeholder="" required />
+            <span class="lighting"></span>
+            <span class="input-group-text">
+                <i class="fa fa-eye" id="togglePass2" style="cursor: pointer;" onclick="togglePasswordVisibility('pass2', 'togglePass2')"></i>
+            </span>
         </div>
 
-        <button type="submit" id="signup">Sign Up</button>
-        <div class="clearfix supporter">
-          <a class="forgot pull-right" href="#">Forgot Password?</a>
-        </div>
+        <button type="submit" id="signup">Daftar</button>
       </form>
     </div>
     <div class="signup-wrapper text-center">
-      <a href="/auth/login/">Already Registered? <span class="text-primary">Login</span></a>
+      <a href="/auth/login/">sudah memiliki akun? <span class="text-primary">Masuk</span></a>
     </div>
   </div>
 
