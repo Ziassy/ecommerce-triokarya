@@ -77,7 +77,7 @@ class AddressView(LoginRequiredMixin, View):
             form = AddressForm(request.POST, instance=address)
         else:
             form = AddressForm(request.POST)
-
+        print(form.is_valid())
         if form.is_valid():
             address = form.save(commit=False)
             address.user = request.user
@@ -92,6 +92,7 @@ class AddressView(LoginRequiredMixin, View):
         kabupaten_list = Kabupaten.objects.all()
         kecamatan_list = Kecamatan.objects.all()
         kelurahan_list = Kelurahan.objects.all()
+        
 
         return render(request, self.template_name, {
             'form': form,
@@ -324,6 +325,7 @@ class PilihAlamatView(LoginRequiredMixin, generic.View):
             'kecamatan': address.kecamatan.name,
             'kelurahan': address.kelurahan.name,
             'kode_pos': address.kode_pos,
+            'nomor_handphone': address.nomor_handphone,
             'detail': address.detail
         }
         return redirect('toko:checkout')
@@ -429,7 +431,8 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
                         kecamatan=selected_address.get('kecamatan'),
                         kelurahan=selected_address.get('kelurahan'),
                         kode_pos=selected_address.get('kode_pos'),
-                        nama_penerima=selected_address.get('nama_penerima')
+                        nama_penerima=selected_address.get('nama_penerima'),
+                        nomor_handphone=selected_address.get('nomor_handphone')
                     )
                     alamat_pengiriman.save()
                     order.alamat_pengiriman = alamat_pengiriman

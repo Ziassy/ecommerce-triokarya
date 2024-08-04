@@ -62,7 +62,11 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="labels" for="kode_pos"><b>Kode Pos</b></label>
-                            <input type="text" class="form-control" id="kode_pos" name="kode_pos" placeholder="Penerima" required value="{{ form.kode_pos.value|default_if_none:'' }}">
+                            <input type="text" class="form-control" id="kode_pos" name="kode_pos" placeholder="Kode Pos" required value="{{ form.kode_pos.value|default_if_none:'' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="labels" for="nomor_handphone"><b>Nomor Handphone</b></label>
+                            <input type="number" class="form-control" id="nomor_handphone" name="nomor_handphone" placeholder="Nomor Handphone" required value="{{ form.nomor_handphone.value|default_if_none:'' }}">
                         </div>
                     </div>
 

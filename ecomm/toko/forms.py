@@ -11,7 +11,7 @@ class UserProfileForm(forms.ModelForm):
 class AddressForm(forms.ModelForm):
     class Meta:
         model = Address
-        fields = ['nama_penerima','provinsi', 'kabupaten', 'kecamatan', 'kelurahan','kode_pos', 'detail', 'is_primary']
+        fields = ['nama_penerima','provinsi', 'kabupaten', 'kecamatan', 'kelurahan','kode_pos','nomor_handphone', 'detail', 'is_primary']
 
 class CheckoutForm(forms.Form):
     opsi_pengiriman = forms.ChoiceField(widget=forms.RadioSelect(), choices=PILIHAN_PENGIRIMAN)

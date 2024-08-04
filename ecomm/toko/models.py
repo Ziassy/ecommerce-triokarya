@@ -100,6 +100,7 @@ class Address(models.Model):
     kode_pos = models.CharField(max_length=20, default='')
     detail = models.CharField(max_length=255, default='')
     nama_penerima = models.CharField(max_length=255, default='')
+    nomor_handphone = models.CharField(max_length=15, default='')
     is_primary = models.BooleanField(default=False)
 
     def __str__(self):
@@ -240,6 +241,7 @@ class AlamatPengiriman(models.Model):
     kelurahan = models.CharField(max_length=100, default='')
     kode_pos = models.CharField(max_length=10, default='')
     nama_penerima = models.CharField(max_length=255, default='')
+    nomor_handphone = models.CharField(max_length=15, default='')
 
     def __str__(self):
         return f"{self.user.username} - {self.detail_alamat}"
