@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import ajax_views
 
 app_name = 'toko'
 
@@ -30,4 +31,7 @@ urlpatterns = [
      path('order-detail/<int:pk>/', views.OrderDetailView.as_view(), name='order-detail'),
      path('update-order-status/<int:pk>/', views.UpdateOrderStatusView.as_view(), name='update-order-status'),
      path('update-payment-status/<int:order_id>/<str:status>/', views.update_payment_status, name='update_payment_status'),
+     path('get-kabupaten/', ajax_views.get_kabupaten, name='get_kabupaten'),
+     path('get-kecamatan/', ajax_views.get_kecamatan, name='get_kecamatan'),
+     path('get-kelurahan/', ajax_views.get_kelurahan, name='get_kelurahan'),
 ]

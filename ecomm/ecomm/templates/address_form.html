@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 <div class="container rounded bg-white mt-5 mb-5">
     <div class="row justify-content-center">
@@ -91,4 +91,10 @@
         </div>
     </div>
 </div>
+
+
+{% block extra_js %}
+<script src="{% static 'js/address.js' %}"></script>
+{% endblock %}
+
 {% endblock content %}
