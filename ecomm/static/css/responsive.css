@@ -1,0 +1,48 @@
+@media only screen and (max-width: 600px) {
+  * {
+    font-size: calc(0.9rem + 0.1vw);
+  }
+
+  .dropdown .other-menu {
+    position: absolute !important;
+  }
+
+  .dropdown {
+    position: absolute;
+    margin-left: 50px;
+    /* Menyesuaikan margin untuk lebih seragam */
+  }
+
+  /* Responsif untuk tabel */
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .table {
+    width: 100%;
+    font-size: 0.8rem !important;
+    /* Memastikan tabel menggunakan lebar penuh kontainer */
+  }
+
+  /* Menyesuaikan padding pada tabel agar lebih kompak di layar kecil */
+  .table th, .table td {
+    padding: 0.5rem;
+  }
+
+  .btn-small {
+    font-size: 0.9rem !important;
+    /* Atur ukuran font sesuai kebutuhan */
+  }
+
+  .status-text {
+    font-size: 0.9rem !important;
+    /* Atur ukuran font sesuai kebutuhan */
+  }
+
+  .status-text .badge {
+    font-size: 0.9rem !important;
+    /* Ukuran font untuk badge */
+    padding: 0.25rem 0.5rem;
+    /* Mengatur padding badge agar sesuai dengan ukuran font */
+  }
+}

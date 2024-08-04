@@ -4,48 +4,47 @@
 <div class="container mt-5">
   <h2>Riwayat Pesanan</h2>
   {% if orders %}
-  <table class="table">
-    <thead>
-      <tr>
-        <th>ID Pesanan</th>
-        <th>Tanggal Pesanan</th>
-        {% if request.user.is_staff %}
-        <th>Pelanggan</th>
-        {%endif%}
-        <th>Total</th>
-        <th>Status <br> Pengiriman</th>
-        <th>Status <br> Pembayaran</th>
-        {% if request.user.is_staff %}
-        <th>Konfirmasi Pembayaran</th>
-        {%endif%}
-        <th></th>
-
-      </tr>
-    </thead>
-    <tbody>
-      {% for order in orders %}
-      <tr>
-        <td>{{ order.id }}</td>
-        <td>{{ order.tanggal_order|date:"d-m-Y H:i:s" }}</td>
-        {% if request.user.is_staff %}
-        <td>{{ order.user }}</td>
-        {%endif%}
-        <td>{{ order.get_total_harga_order_with_shipping_cost|currency_idr }}</td>
-        <td>{{ order.get_order_status_display }}</td>
-        <td>
-          <p>
-              {% if order.payment.status == 'B' %}
-                  <span class="badge bg-warning text-white">Belum di bayar</span>
-              {% elif order.payment.status == 'S' %}
-                  <span class="badge bg-success">Pembayaran berhasil</span>
-              {% elif order.payment.status == 'F' %}
-                  <span class="badge bg-danger text-white">Pembayaran gagal</span>
-              {% endif %}
-          </p>
-        </td>
-        {% if request.user.is_staff %}
-        <td> 
-          
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID Pesanan</th>
+          <th>Tanggal Pesanan</th>
+          {% if request.user.is_staff %}
+          <th>Pelanggan</th>
+          {% endif %}
+          <th>Total</th>
+          <th>Status <br> Pengiriman</th>
+          <th>Status <br> Pembayaran</th>
+          {% if request.user.is_staff %}
+          <th>Konfirmasi Pembayaran</th>
+          {% endif %}
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td>{{ order.id }}</td>
+          <td>{{ order.tanggal_order|date:"d-m-Y H:i:s" }}</td>
+          {% if request.user.is_staff %}
+          <td>{{ order.user }}</td>
+          {% endif %}
+          <td>{{ order.get_total_harga_order_with_shipping_cost|currency_idr }}</td>
+          <td>{{ order.get_order_status_display }}</td>
+          <td>
+            <p class="status-text">
+                {% if order.payment.status == 'B' %}
+                    <span class="badge bg-warning text-white">Belum di bayar</span>
+                {% elif order.payment.status == 'S' %}
+                    <span class="badge bg-success">Pembayaran berhasil</span>
+                {% elif order.payment.status == 'F' %}
+                    <span class="badge bg-danger text-white">Pembayaran gagal</span>
+                {% endif %}
+            </p>
+          </td>
+          {% if request.user.is_staff %}
+          <td> 
             {% if order.payment.status == 'B' %}
               <div class="d-flex">
                     <form method="post" action="{% url 'toko:update_payment_status' order.id 'S' %}" class="me-2">
@@ -58,13 +57,14 @@
                     </form>
               </div>
             {% endif %}
-        </td>
-        {% endif %}
-        <td><a href="{% url 'toko:order-detail' order.pk %}" class="btn btn-light">Lihat Detail</a></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+          </td>
+          {% endif %}
+          <td><a href="{% url 'toko:order-detail' order.pk %}" class="btn btn-light btn-small">Lihat Detail</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
   {% else %}
   <p class="text-center mt-5 mb-5">Kamu belum memiliki riwayat pesanan.</p>
   {% endif %}
