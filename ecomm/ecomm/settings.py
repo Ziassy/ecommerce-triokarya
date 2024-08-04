@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
 
-    'paypal.standard.ipn',
 
     'authuser',
 ]
@@ -139,12 +138,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-PAYPAL_CLIENT_ID = env('PAYPAL_SANDBOX_CLIENT_ID')
-PAYPAL_SECRET_ID = env('PAYPAL_SANDBOX_SECRET_KEY')
-
-PAYPAL_RECEIVER_EMAIL = env('PAYPAL_RECEIVER_EMAIL')
-PAYPAL_TEST = env('PAYPAL_TEST', default=False, cast=bool)
 CORS_ORIGIN_ALLOW_ALL = True
 
 
@@ -210,7 +203,3 @@ if DEBUG is False:
         }
     }
 
-    PAYPAL_CLIENT_ID = env('PAYPAL_LIVE_CLIENT_ID')
-    PAYPAL_SECRET_ID = env('PAYPAL_LIVE_SECRET_ID')
-    PAYPAL_TEST=False
-    PAYPAL_RECEIVER_EMAIL = env('PAYPAL_RECEIVER_EMAIL')

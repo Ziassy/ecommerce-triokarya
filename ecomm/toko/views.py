@@ -5,7 +5,6 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils import timezone
 from django.views import generic
-from paypal.standard.forms import PayPalPaymentsForm
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
@@ -443,11 +442,9 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
                     messages.warning(self.request, 'Alamat pengiriman belum dipilih')
                     return redirect('toko:checkout')
 
-                if opsi_pembayaran == 'P':
-                    return redirect('toko:payment', payment_method='paypal')
-                elif opsi_pembayaran == 'T':
+                if opsi_pembayaran == 'T':
                     return redirect('toko:payment', payment_method='manual')
-                else:
+                elif opsi_pembayaran == 'C':
                     return redirect('toko:payment', payment_method='COD')
             else:
                 print(form.errors)
@@ -471,29 +468,8 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
             # Update total price to include shipping cost
             total_price = order.get_total_harga_order() + (order.shipping_cost or 0)
             
-            if payment_method == 'paypal':
-                paypal_data = {
-                    'business': settings.PAYPAL_RECEIVER_EMAIL,
-                    'amount': order.get_total_harga_order(),
-                    'item_name': f'Pembayaran belajanan order: {order.id}',
-                    'invoice': f'{order.id}-{timezone.now().timestamp()}',
-                    'currency_code': 'USD',
-                    'notify_url': self.request.build_absolute_uri(reverse('paypal-ipn')),
-                    'return_url': self.request.build_absolute_uri(reverse('toko:paypal-return')),
-                    'cancel_return': self.request.build_absolute_uri(reverse('toko:paypal-cancel')),
-                }
 
-                form = PayPalPaymentsForm(initial=paypal_data)
-                context = {
-                    'paypalform': form,
-                    'order': order,
-                    'is_paypal': True,
-                    'payment_method': payment_method,
-                    'due_time': due_time,
-                }
-                return render(self.request, template_name, context)
-
-            elif payment_method == 'COD':
+            if payment_method == 'COD':
                 payment = Payment()
                 payment.user = self.request.user
                 payment.amount = order.get_total_harga_order()
@@ -550,44 +526,6 @@ class PaymentView(LoginRequiredMixin, generic.FormView):
 
         except ObjectDoesNotExist:
             return redirect('toko:checkout')
-
-
-@csrf_exempt
-def paypal_return(request):
-    if request.user.is_authenticated:
-        try:
-            print('paypal return', request)
-            order = Order.objects.get(user=request.user, ordered=False)
-            payment = Payment()
-            payment.user=request.user
-            payment.amount = order.get_total_harga_order()
-            payment.payment_option = 'P' # paypal kalai
-            payment.charge_id = f'{order.id}-{timezone.now()}'
-            payment.timestamp = timezone.now()
-            payment.save()
-
-            order_produk_item = OrderProdukItem.objects.filter(user=request.user,ordered=False)
-            order_produk_item.update(ordered=True)
-            
-            order.payment = payment
-            order.ordered = True
-            order.save()
-
-            messages.info(request, 'Pembayaran sudah diterima, terima kasih')
-            return redirect('toko:home-produk-list')
-        except ObjectDoesNotExist:
-            messages.error(request, 'Periksa kembali pesananmu')
-            return redirect('toko:order-summary')
-    else:
-        return redirect('/accounts/login')
-
-@csrf_exempt
-def paypal_cancel(request):
-    messages.error(request, 'Pembayaran dibatalkan')
-    return redirect('toko:order-summary')
-
-
-
 class OrderHistoryView(View):
     def get(self, request, *args, **kwargs):
         if request.user.is_staff:  # Check if the user is an admin

@@ -20,7 +20,6 @@ PILIHAN_LABEL = (
 )
 
 PILIHAN_PEMBAYARAN = (
-    ('P', 'Paypal'),
     ('C', 'COD'),
     ('T', 'Transfer Manual (BCA)'),
 )
