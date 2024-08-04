@@ -314,74 +314,20 @@ def remove_from_cart(request, slug):
 class PilihAlamatView(LoginRequiredMixin, generic.View):
     def post(self, request, pk, *args, **kwargs):
         address = get_object_or_404(Address, pk=pk, user=request.user)
+        print("address", address)
         # Mengambil ID dari alamat
         request.session['selected_address'] = {
             'address_id': address.pk,
             'nama_penerima': address.nama_penerima,
             'provinsi': address.provinsi.name,
             'kabupaten': address.kabupaten.name,
+            'kabupaten_id': address.kabupaten.id,
             'kecamatan': address.kecamatan.name,
             'kelurahan': address.kelurahan.name,
             'kode_pos': address.kode_pos,
             'detail': address.detail
         }
         return redirect('toko:checkout')
-    
-    
-class CheckoutView(LoginRequiredMixin, generic.FormView):
-    def get(self, *args, **kwargs):
-        order = get_object_or_404(Order, user=self.request.user, ordered=False)
-
-        # Handle Insecure direct object reference
-        # Check if the order belongs to the current user
-        if order.user != self.request.user:
-            raise PermissionDenied('You are not authorized to access this order.')
-
-        form = CheckoutForm()
-        try:
-            order = Order.objects.get(user=self.request.user, ordered=False)
-            if order.produk_items.count() == 0:
-                messages.warning(self.request, 'Belum ada belanjaan yang Anda pesan, lanjutkan belanja')
-                return redirect('toko:home-produk-list')
-        except ObjectDoesNotExist:
-            order = {}
-            messages.warning(self.request, 'Belum ada belanjaan yang Anda pesan, lanjutkan belanja')
-            return redirect('toko:home-produk-list')
-
-        # Get the user's addresses
-        addresses = Address.objects.filter(user=self.request.user)
-        selected_address = self.request.session.get('selected_address', None)
-
-        origin = '154'  # ID Kota Asal
-        destination = '78'  # ID Kota Tujuan
-        weight = 1700  # Berat Barang dalam gram
-        couriers = ['jne', 'pos', 'tiki']  # Daftar kurir
-
-        shipping_costs = []
-        for courier in couriers:
-            cost_data = get_shipping_cost(origin, destination, weight, courier)
-            if cost_data['rajaongkir']['status']['code'] == 200:
-                for result in cost_data['rajaongkir']['results']:
-                    for service in result['costs']:
-                        shipping_costs.append({
-                            'courier': result['name'],
-                            'service': service['service'],
-                            'cost': service['cost'][0]['value'],
-                            'etd': service['cost'][0]['etd']
-                        })
-            
-        # Store shipping costs in session
-        self.request.session['shipping_costs'] = shipping_costs
-
-        context = {
-            'form': form,
-            'keranjang': order,
-            'addresses': addresses,
-            'selected_address': selected_address,
-            'shipping_costs': shipping_costs
-        }
-        template_name = 'checkout.html'
-        return render(self.request, template_name, context)
 
 class CheckoutView(LoginRequiredMixin, generic.FormView):
     def get(self, *args, **kwargs):
@@ -404,11 +350,22 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
 
         # Get the user's addresses
         addresses = Address.objects.filter(user=self.request.user)
+        
         selected_address = self.request.session.get('selected_address', None)
 
+        # Default values
+        default_destination = 0
+        default_weight = 1000
+
+        destination = selected_address['kabupaten_id'] if selected_address else default_destination
+        print(selected_address)
+        # Calculate the total weight of items in the order
+        if order.produk_items.exists():
+            weight = sum(item.quantity * item.produk_item.berat for item in order.produk_items.all())
+        else:
+            weight = default_weight
+
         origin = '154'  # ID Kota Asal
-        destination = '78'  # ID Kota Tujuan
-        weight = 1700  # Berat Barang dalam gram
         couriers = ['jne', 'pos', 'tiki']  # Daftar kurir
 
         shipping_costs = []
@@ -423,6 +380,8 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
                             'cost': service['cost'][0]['value'],
                             'etd': service['cost'][0]['etd']
                         })
+        print(destination, weight)
+        print(shipping_costs)
 
         # Store shipping costs in session
         self.request.session['shipping_costs'] = shipping_costs
@@ -498,6 +457,7 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
         except ObjectDoesNotExist:
             messages.error(self.request, 'Tidak ada pesanan yang aktif')
             return redirect('toko:order-summary')
+
 
 class PaymentView(LoginRequiredMixin, generic.FormView):
     def get(self, *args, **kwargs):
