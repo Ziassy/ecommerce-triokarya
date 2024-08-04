@@ -62,11 +62,11 @@
               <div class="card mb-3">
                 <div class="card-body">
                   <div class="d-flex justify-content-between">
-                    <div>Total Payment</div>
+                    <div>Total Pembayaran</div>
                     <div class="total-payment text-danger"><b>{{ order.get_total_harga_order_with_shipping_cost|currency_idr }}</b></div>
                   </div>
                   <div class="d-flex justify-content-between">
-                    <div>Payment Within</div>
+                    <div>Payment dalam waktu</div>
                     <div class="due-time">Due on {{ due_time|date:"d M Y, H:i" }}</div>
                   </div>
                 </div>
@@ -75,11 +75,11 @@
               <div class="card mb-3">
                 <div class="card-body">
                   <div class="d-flex align-items-center mb-2">
-                    <img src="https://via.placeholder.com/24x24.png?text=BCA" alt="BCA logo" class="me-2">
+                    <img src="https://via.placeholder.com/24x24.png?text=BCA" alt="Logo BCA" class="me-2">
                     <div>Bank BCA</div>
                   </div>
                   <div class="d-flex justify-content-between">
-                    <div>Account Number</div>
+                    <div>Nomor Rekening</div>
                     <div class="text-danger">5265056668</div>
                   </div>
                 </div>
@@ -89,17 +89,16 @@
                 <div class="card-body">
                   <div class="instruction">
                     <ol>
-                      <li>Choose <b>m-Transfer &gt; Transfer to BCA Account</b>.</li>
-                      <li>Input <b>Account Number 5265056668</b> and choose <b>Send</b>.</li>
-                      <li>Check the data on screen. Ensure that Merchant is <b>RAMADHANI ASRI</b>, Total amount is correct. If
-                        correct, choose <b>Yes</b>.</li>
-                      <li>Input your m-BCA PIN and click <b>OK</b>.</li>
-                      <li>If "Transaction is Failed. Payment amount exceeds the daily limit" is displayed, please retry the
-                        transaction using <b>KlikBCA (iBanking) or ATM</b>.</li>
+                      <li>Pilih <b>m-Transfer &gt; Transfer ke Rekening BCA</b>.</li>
+                      <li>Masukkan <b>Nomor Rekening 5265056668</b> dan pilih <b>Kirim</b>.</li>
+                      <li>Periksa data di layar. Pastikan Merchant adalah <b>RAMADHANI ASRI</b>, dan jumlah total sudah benar. Jika benar, pilih <b>Ya</b>.</li>
+                      <li>Masukkan PIN m-BCA Anda dan klik <b>OK</b>.</li>
+                      <li>Jika muncul pesan "Transaksi Gagal. Jumlah pembayaran melebihi batas harian", silakan coba ulang transaksi menggunakan <b>KlikBCA (iBanking) atau ATM</b>.</li>
                     </ol>
                   </div>
                 </div>
               </div>
+
 
               <a href="{% url 'toko:order-history' %}" class="btn btn-danger btn-lg w-100">Lihat pesanan.</a>
             </div>

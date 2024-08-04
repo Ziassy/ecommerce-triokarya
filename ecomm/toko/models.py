@@ -195,7 +195,7 @@ class Order(models.Model):
     delivery_method = models.CharField(max_length=2,choices=PILIHAN_PENGIRIMAN,default='PR')
     status = models.CharField(max_length=1, choices=STATUS_CHOICES_PENGIRIMAN, default='P')
     shipping_cost = models.FloatField(null=True, blank=True)
-    shipping_courier = models.CharField(max_length=20, null=True, blank=True)
+    shipping_courier = models.CharField(max_length=100, null=True, blank=True)
     nomor_resi = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):

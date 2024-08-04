@@ -2,6 +2,7 @@
 {% load cart_template_tags %}
 {% block content %}
 <div class="container mt-5 mb-5">
+  <a href="{% url 'toko:order-history' %}" class="btn btn-light">&larr; Back</a>
   <h2>Detail Pesanan #{{ order.id }}</h2>
   <div class="row mt-4">
     <div class="col-md-5">
