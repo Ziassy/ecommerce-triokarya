@@ -21,6 +21,7 @@
                         <h5 class="modal-title" id="alamatModalLabel">Pilih Alamat</h5>
                     </div>
                     <div class="modal-body">
+                        {% if addresses.exists %}
                         <table class="table">
                             <thead>
                                 <tr>
@@ -55,6 +56,12 @@
                                 {% endfor %}
                             </tbody>
                         </table>
+                        {% else %}
+                        <div class="alert alert-warning" role="alert">
+                            Anda belum memiliki alamat pengiriman. Silakan tambahkan alamat baru.
+                        </div>
+                        <a href="{% url 'toko:address_list' %}" class="btn btn-primary">Tambahkan Alamat Baru</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

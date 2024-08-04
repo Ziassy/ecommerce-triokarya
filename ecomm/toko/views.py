@@ -314,7 +314,6 @@ def remove_from_cart(request, slug):
 class PilihAlamatView(LoginRequiredMixin, generic.View):
     def post(self, request, pk, *args, **kwargs):
         address = get_object_or_404(Address, pk=pk, user=request.user)
-        print("address", address)
         # Mengambil ID dari alamat
         request.session['selected_address'] = {
             'address_id': address.pk,
@@ -358,7 +357,6 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
         default_weight = 1000
 
         destination = selected_address['kabupaten_id'] if selected_address else default_destination
-        print(selected_address)
         # Calculate the total weight of items in the order
         if order.produk_items.exists():
             weight = sum(item.quantity * item.produk_item.berat for item in order.produk_items.all())
@@ -380,8 +378,6 @@ class CheckoutView(LoginRequiredMixin, generic.FormView):
                             'cost': service['cost'][0]['value'],
                             'etd': service['cost'][0]['etd']
                         })
-        print(destination, weight)
-        print(shipping_costs)
 
         # Store shipping costs in session
         self.request.session['shipping_costs'] = shipping_costs
