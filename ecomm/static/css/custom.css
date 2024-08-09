@@ -1,8 +1,6 @@
 /*
 Custom Css
 */
-
-
 .rating {
   display: flex;
   justify-content: center;
@@ -42,4 +40,8 @@ Custom Css
 
 .container .information-payment {
   width: 500px !important;
+}
+
+.about-hero{
+  width: 400px;
 }
