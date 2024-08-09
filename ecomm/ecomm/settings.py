@@ -26,6 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
+BASE_URL = env('BASE_URL')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG', default=False, cast=bool)
@@ -140,9 +141,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-
-DEFAULT_FROM_EMAIL= env('DEFAULT_FROM_EMAIL')
-NOTIFY_EMAIL= env('NOTIFY_EMAIL')
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
