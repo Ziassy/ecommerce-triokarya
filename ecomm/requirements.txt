@@ -26,3 +26,5 @@ typing_extensions==4.5.0
 urllib3==1.26.15
 six
 requests
+typing-extensions-4.12.2
+setuptools-72.1.0
